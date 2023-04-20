@@ -42,6 +42,15 @@ options:
                         default.
 ```
 
+## Configuration
+
+Default config (YAML) files are located directly in the [`cc_images`](cc_images) package. Different
+files can be used by setting several environment variables:
+
+* `CC_IMAGES_CONFIG`: Overrides [images.yaml](cc_images/images.yaml)
+* `CC_SITES_CONFIG`: Overrides [sites.yaml](cc_images/sites.yaml)
+* `CC_THIRD_PARTY_ELEMENTS_CONFIG`: Overrides [third-party.yaml](cc_images/third-party.yaml)
+
 ## Building
 
 Building is triggered by the `-b/--build` flag. When a build is triggered, `cc-images` evaluates

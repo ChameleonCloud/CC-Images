@@ -1,0 +1,13 @@
+# These are the sites where images will be *pushed*. Because of how the
+# image puller tool works, the only sites for now are {CHI,KVM}@TACC
+# ``cloud`` refers to the segment of clouds.yaml which describes how to authenticate to the host
+---
+#CHI@UC:
+#  is_baremetal: True
+#  cloud: uc
+CHI@TACC:
+  is_baremetal: True
+  cloud: tacc
+KVM@TACC:
+  is_baremetal: False
+  cloud: kvm
