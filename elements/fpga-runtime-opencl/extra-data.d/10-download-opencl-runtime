@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+  set -x
+fi
+set -eu
+set -o pipefail
+
+OPENCL_LOCAL_FILE="${DIB_IMAGE_CACHE}/fpga/${DIB_OPENCL_RUNFILE_NAME}"
+
+if [[ ! -f "${OPENCL_LOCAL_FILE}" ]]; then
+  wget --show-progress -O "${OPENCL_LOCAL_FILE}" "${DIB_OPENCL_RUNFILE_URL}"
+fi
+
+cp "${OPENCL_LOCAL_FILE}" "${TMP_HOOKS_PATH}"

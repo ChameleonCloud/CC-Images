@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Delete existing rules
+bash -c "yes || true" | ufw reset
+
+# Establish firewall rules
+ufw allow ssh
+ufw allow from 10.0.0.0/8
+ufw allow from 172.16.0.0/12
+ufw allow from 192.168.0.0/16
+ufw default deny incoming || true
+
+# Enable ufw
+ufw --force enable
+echo "ufw --force enable" >> /etc/rc.local
+# Ensure that /etc/rc.local is executable
+chmod +x /etc/rc.local

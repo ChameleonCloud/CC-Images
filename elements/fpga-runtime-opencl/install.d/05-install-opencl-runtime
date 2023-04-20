@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+  set -x
+fi
+set -o nounset
+set -o errexit
+set -o pipefail
+
+# Install Altera RTE
+install-packages install -y "/tmp/in_target.d/${DIB_OPENCL_RUNFILE_NAME}"
+
+# Create profile script
+cat >/etc/profile.d/altera.sh <<-EOM
+export ALTERAOCLSDKROOT="/opt/altera/aocl-pro-rte"
+export AOCL_BOARD_PACKAGE_ROOT=\$ALTERAOCLSDKROOT/board/${DIB_FPGA_BOARD_PACAKGE_ARCHIVE_NAME%.*}
+export ACL_BOARD_VENDOR_PATH=\$AOCL_BOARD_PACKAGE_ROOT/
+
+export PATH=\$PATH:\$ALTERAOCLSDKROOT/bin
+
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$ALTERAOCLSDKROOT/linux64/lib
+export LD_LIBRARY_PATH=\LD_LIBRARY_PATH:\$ALTERAOCLSDKROOT/host/linux64/lib
+export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$AOCL_BOARD_PACKAGE_ROOT/linux64/lib
+
+source /opt/altera/aocl-pro-rte/init_opencl.sh
+
+echo LM_LICENSE_FILE: \$LM_LICENSE_FILE
+echo AOCL_BOARD_PACKAGE_ROOT: \$AOCL_BOARD_PACKAGE_ROOT
+echo
+EOM
+
+source /etc/profile.d/altera.sh
+
+tar xvfz "/tmp/in_target.d/${DIB_FPGA_BOARD_PACAKGE_ARCHIVE_NAME}" -C "$ALTERAOCLSDKROOT"/board/
+
+# Build kernel module
+bash -c "yes || true" | aocl install
+
+# Add startup script
+chmod a+x /etc/profile.d/altera.sh
+echo "/etc/profile.d/altera.sh" >>/etc/rc.local
+
+# Ensure that /etc/rc.local is executable
+chmod +x /etc/rc.local

@@ -1,0 +1,10 @@
+---
+cuda-drivers:
+  when: DIB_RELEASE = 7
+cuda-toolkit:
+kernel-headers:
+  phase: pre-install.d
+nvidia-driver-latest-dkms:
+  when: DIB_RELEASE = 7
+nvidia-gds:
+  when: DIB_RELEASE != 7

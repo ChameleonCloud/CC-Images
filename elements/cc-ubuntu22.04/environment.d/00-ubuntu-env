@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export DIB_RELEASE=jammy
+export DIB_DISTRO_VERSION=22.04

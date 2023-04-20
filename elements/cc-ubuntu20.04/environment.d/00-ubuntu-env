@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export DIB_RELEASE=focal
+export DIB_DISTRO_VERSION=20.04

@@ -1,0 +1,27 @@
+{
+  "family": {
+    "debian": {
+      "ansible": "ansible",
+      "build-essential": "build-essential",
+      "g++": "g++",
+      "gfortran": "gfortran",
+      "libstdc++": "libstdc++6",
+      "libvirt": "libvirt0",
+      "openssl": "openssl",
+      "nfs-common": "nfs-common",
+      "puppet": "puppet",
+      "systemtap-sdt-dev": "systemtap-sdt-dev"
+    },
+    "redhat": {
+      "ansible": "ansible-core",
+      "g++": "gcc-c++",
+      "gfortran": "gcc-gfortran",
+      "libstdc++": "libstdc++-devel",
+      "libvirt": "libvirt-devel",
+      "openssl": "openssl-devel",
+      "nfs-common": "nfs-utils",
+      "puppet": "puppetserver",
+      "systemtap-sdt-dev": "systemtap-devel"
+    }
+  }
+}

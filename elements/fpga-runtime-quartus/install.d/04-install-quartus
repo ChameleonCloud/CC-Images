@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+  set -x
+fi
+set -o nounset
+set -o errexit
+set -o pipefail
+
+QUARTUS_ROOTDIR=/opt/intelFPGA_pro/"${DIB_QUARTUS_VERSION}"
+QUARTUS_RUNFILE_NAME="QuartusProProgrammerSetup-${DIB_QUARTUS_VERSION}-linux.run"
+
+# Install Quartus Prime
+"/tmp/in_target.d/${QUARTUS_RUNFILE_NAME}" --mode unattended --installdir "${QUARTUS_ROOTDIR}" --accept-eula 1
+
+# Create profile script
+cat >/etc/profile.d/quartus.sh <<-EOM
+export QUARTUS_ROOTDIR="${QUARTUS_ROOTDIR}"
+
+export PATH=\$QUARTUS_ROOTDIR/qprogrammer/linux64/jre64/bin:\$PATH
+export PATH=\$PATH:\$QUARTUS_ROOTDIR/bin
+export PATH=\$PATH:\$QUARTUS_ROOTDIR/qprogrammer/bin
+
+export QUARTUS_ROOTDIR_OVERRIDE=\$QUARTUS_ROOTDIR/qprogrammer
+export PATH=\$PATH:\$QUARTUS_ROOTDIR/qprogrammer/sopc_builder/bin/ # for qsys-script
+export PATH=\$PATH:\$QUARTUS_ROOTDIR/modelsim_ae/linuxaloem/ # for vsim
+
+export QUARTUS_64BIT=1
+
+export QSYS_ROOTDIR=\$QUARTUS_ROOTDIR/qprogrammer/sopc_builder/bin
+
+echo QUARTUS_ROOTDIR: \$QUARTUS_ROOTDIR
+echo
+EOM
+
+# Add startup script
+chmod a+x /etc/profile.d/quartus.sh
+echo "/etc/profile.d/quartus.sh" >> /etc/rc.local
+
+# Ensure that /etc/rc.local is executable
+chmod +x /etc/rc.local
+
