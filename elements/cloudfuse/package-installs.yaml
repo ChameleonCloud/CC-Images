@@ -1,0 +1,17 @@
+---
+libcurl-openssl-dev:
+  build-only: True
+libfuse-dev:
+  build-only: True
+libjson-c-dev:
+  build-only: True
+libneon-dev:
+  build-only: True
+  when: DISTRO_NAME = ubuntu
+libssl-dev:
+  build-only: True
+libxml:
+libxml-dev:
+  build-only: True
+neon:
+  when: DISTRO_NAME = centos

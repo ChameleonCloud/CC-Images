@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Official diskimage-builder element always attempts to install python2. This flag prevents that.
+export DIB_INSTALLTYPE_pip_and_virtualenv=package

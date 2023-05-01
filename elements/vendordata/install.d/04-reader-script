@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+cat > /usr/bin/cc-read-vendordata <<- 'EOM'
+#!/bin/bash
+
+PARAM=$1
+
+OPENSTACK_VENDOR_DATA_2='http://169.254.169.254/openstack/latest/vendor_data2.json'
+JSON_VENDOR_DATA=$(curl -s $OPENSTACK_VENDOR_DATA_2)
+JSON_VENDOR_DATA=$(echo $JSON_VENDOR_DATA | jq -r .chameleon)
+
+echo $JSON_VENDOR_DATA | jq -r .$PARAM
+
+EOM
+
+chmod a+x /usr/bin/cc-read-vendordata

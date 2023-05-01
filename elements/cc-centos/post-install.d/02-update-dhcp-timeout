@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# Change the DHCP timeout to a 30 seconds value.
+if [[ -f "/etc/dhcp/dhclient.conf" ]]; then
+  sed -i "s/timeout.*/timeout 30;/g" /etc/dhcp/dhclient.conf
+else
+  echo "timeout 300;" > /etc/dhcp/dhclient.d/cc-timeout.conf
+fi

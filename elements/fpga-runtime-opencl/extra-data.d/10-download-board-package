@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+  set -x
+fi
+set -eu
+set -o pipefail
+
+BOARD_PACKAGE_LOCAL_ARCHIVE="${DIB_IMAGE_CACHE}/fpga/${DIB_FPGA_BOARD_PACAKGE_ARCHIVE_NAME}"
+
+if [[ ! -f "${BOARD_PACKAGE_LOCAL_ARCHIVE}" ]]; then
+  wget --show-progress -O "${BOARD_PACKAGE_LOCAL_ARCHIVE}" "${DIB_FPGA_BOARD_PACKAGE_ARCHIVE_URL}"
+fi
+
+cp "${BOARD_PACKAGE_LOCAL_ARCHIVE}" "${TMP_HOOKS_PATH}"

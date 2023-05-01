@@ -1,0 +1,3 @@
+#!/bin/bash
+
+export DIB_PYTHON=3

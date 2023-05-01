@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [[ "${DIB_DISABLE_DEFAULT_PYTHON3}" -ne 0 ]]; then
+  echo "Not making python3 default."
+  exit 0
+fi
+ln -sf /usr/bin/python3 /usr/bin/python
+ln -sf /usr/bin/pip3 /usr/bin/pip

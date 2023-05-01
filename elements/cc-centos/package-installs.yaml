@@ -1,0 +1,8 @@
+---
+dhcp-client:
+redhat-lsb-core:
+  # Deprecated in CentOS 9
+  when: DIB_RELEASE != 9-stream
+redhat-rpm-config:
+rpm-build:
+rpm-sign:

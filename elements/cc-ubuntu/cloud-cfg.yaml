@@ -1,0 +1,139 @@
+---
+users:
+  - default
+  # references the 'default_user' from the distro config below
+  - name: ccadmin
+    uid: '1010'
+    lock-passwd: true
+    gecos: Chameleon Cloud Admin User
+    groups: [wheel, adm, systemd-journal]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIP5yCb+pms83A9f0JPDx+ILOAYy7OoxPf5MjZlL+JW/bWRKuMmQDYLi6F22QoFlRrL0LsNsR8m28F/4uox81QOVq6D+uXODUe0FLJF1SLowxVrhvtEQSb0p2Ep3F3Isk6niEVTYNz+Uyx1s5jZ3xF1CjUFt8fhggkZEn+mAxux8FQO35mJF0mbEVNAA/ZiApLmM8/oBxtOd9T3QHEoXD5wensAWlGk2HdQVUMHNFRLZPl3Oo4BHYI3CbD/mu6dOZLOF/bvJF6dnwmQI+JflSLHLwGObKdi96w+sOEQfuYA1hMCes4M7rTkrNwAoLJUxZjr/l1/EgJJbbEIGiKOUW4TtNTiaIfV58ynhKdlvd7sIEquWGnPTtz3qviSkEmPiub48mt99sMXbHCNOFTz4dIwtjC2RQEWbRbccdVYRYBXXM9p5lThcRiyWrgkneIi/wfaRCKXzpzhSREgWWrFQ6/8p0ZbLeT/UGP6B0Lo7u1MsTSGa54VzK8AfhYJLMXJH/V+59g0iMN/owcUknI6KdLrsP9TW9jB7mKwtHBHyxC4IGcEKwwT+rW1hyz3JfHr0GEzt4FW86Ryyv2nb4yB4RC/R8YkWOM9mSJsQbZkAmXVWVJLCzE36cH0SgyFZvYfW2O7Ly+pwnVIgoPfowRTHCxCyO07qI+S22WLEH1HNw98w== Chameleon admin access
+
+# If this is set, 'root' will not be able to ssh in and they
+# will get a message to login instead as the above $user (ubuntu)
+disable_root: true
+ssh_pwauth:   0
+
+# This will cause the set+update hostname module to not operate (if true)
+preserve_hostname: false
+
+# network is configured via
+# https://github.com/openstack/diskimage-builder/tree/master/diskimage_builder/elements/dhcp-all-interfaces
+network:
+  config: disabled
+
+# Example datasource config
+datasource:
+  OpenStack:
+    metadata_urls:
+      - "http://169.254.169.254"
+    #timeout: 5 # (default 5)
+    #retries: 5 # (default 5)
+    #max_wait: 10 # (default -1)
+
+# The modules that run in the 'init' stage
+cloud_init_modules:
+  - migrator
+  - seed_random
+  - bootcmd
+  - growpart
+  - resizefs
+  - set_hostname
+  - update_hostname
+  - update_etc_hosts
+  - ca-certs
+  - rsyslog
+  - users-groups
+  - ssh
+  - write-files
+
+# The modules that run in the 'config' stage
+cloud_config_modules:
+  - disk_setup
+  - mounts
+  - ssh-import-id
+  - locale
+  - set-passwords
+  - grub-dpkg
+  - apt-pipelining
+  - apt-configure
+  - package-update-upgrade-install
+  - landscape
+  - timezone
+  - puppet
+  - chef
+  - salt-minion
+  - mcollective
+  - disable-ec2-metadata
+  - runcmd
+  - byobu
+
+# The modules that run in the 'final' stage
+cloud_final_modules:
+  - rightscale_userdata
+  - scripts-vendor
+  - scripts-per-once
+  - scripts-per-boot
+  - scripts-per-instance
+  - scripts-user
+  - ssh-authkey-fingerprints
+  - keys-to-console
+  - phone-home
+  - final-message
+  - power-state-change
+
+# System and/or distro specific settings
+# (not accessible to handlers/transforms)
+system_info:
+  # This will affect which distro class gets used
+  distro: ubuntu
+  # Default user name + that default users groups (if added/used)
+  default_user:
+    name: cc
+    uid: '1000'
+    lock_passwd: True
+    gecos: Chameleon Cloud User
+    groups: [adm, audio, cdrom, dialout, dip, floppy, netdev, plugdev, sudo, video]
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+  # Other config here will be given to the distro class and/or path classes
+  paths:
+    cloud_dir: /var/lib/cloud/
+    templates_dir: /etc/cloud/templates/
+    upstart_dir: /etc/init/
+  package_mirrors:
+    - arches: [i386, amd64]
+      failsafe:
+        primary: http://archive.ubuntu.com/ubuntu
+        security: http://security.ubuntu.com/ubuntu
+      search:
+        primary:
+          - http://%(ec2_region)s.ec2.archive.ubuntu.com/ubuntu/
+          - http://%(availability_zone)s.clouds.archive.ubuntu.com/ubuntu/
+          - http://%(region)s.clouds.archive.ubuntu.com/ubuntu/
+        security: []
+    - arches: [armhf, armel, default]
+      failsafe:
+        primary: http://ports.ubuntu.com/ubuntu-ports
+        security: http://ports.ubuntu.com/ubuntu-ports
+  ssh_svcname: ssh
+
+manage_etc_hosts: true
+
+write_files:
+  - path: /home/cc/.profile
+    content: |
+      if [ -f "$HOME/openrc" ]; then
+          source "$HOME/openrc"
+      fi
+    owner: cc:cc
+    append: true
+
+runcmd:
+  - su cc -c /etc/auto_generate_openrc
+  - su cc -c /etc/copy_user_ssh_keys
+  - su cc -c /etc/auto_mount_object_store
+  - /etc/setup_default_firewall

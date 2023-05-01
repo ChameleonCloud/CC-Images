@@ -42,6 +42,15 @@ options:
                         default.
 ```
 
+## Configuration
+
+Default config (YAML) files are located directly in the [`cc_images`](cc_images) package. Different
+files can be used by setting several environment variables:
+
+* `CC_IMAGES_CONFIG`: Overrides [images.yaml](cc_images/images.yaml)
+* `CC_SITES_CONFIG`: Overrides [sites.yaml](cc_images/sites.yaml)
+* `CC_THIRD_PARTY_ELEMENTS_CONFIG`: Overrides [third-party.yaml](cc_images/third-party.yaml)
+
 ## Building
 
 Building is triggered by the `-b/--build` flag. When a build is triggered, `cc-images` evaluates
@@ -111,7 +120,24 @@ in [`diskimage-builder`](https://github.com/openstack/diskimage-builder/tree/mas
 If the new element describes an image, the image must also be defined
 in [images.yaml](cc_images/images.yaml) in order for `cc-images` to build it.
 
+New images built for Chameleon should always take a dependency on _at least_
+the [cc-common](elements/cc-common) element.
+
+**NOTE: ANY IMAGES BUILT BY THIS TOOL SHOULD NOT NECESSARILY BE EXPECTED TO WORK ANYWHERE EXCEPT
+CHAMELEON.**
+
 #### Third Party Elements
 
 Third-party elements should simply be defined in [third-party.yaml](cc_images/third-party.yaml). Any
 elements defined here will be automatically pulled and imported every time `cc-images` is run.
+
+## Known Issues
+
+* CentOS7 images are non-functioning
+    * There is an issue with the `grub` configuration for UEFI which prevents them from booting
+    * There is an issue with autologin for non-UEFI nodes which prevents them from logging in
+      post-boot
+* CentOS CUDA images are non-functioning
+  * The Nvidia drivers are not loaded by the system
+* The FPGA elements are untested and incomplete
+  * Work on these will continue on more-modern stable operating system then CentOS7

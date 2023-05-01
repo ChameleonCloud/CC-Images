@@ -1,0 +1,4 @@
+---
+# These iptables packages are required for the firewall to interface properly with the kernel module
+iptables-nft:
+iptables-utils:

@@ -1,0 +1,14 @@
+# Describes third-party elements which should be cloned before building
+# repo: git URL which points to the project containing the elements
+# branch: the desired git branch
+# elements_directory: the relative path within the repo to the directory containing the elements
+---
+tripleo-image-elements:
+  repo: https://github.com/chameleoncloud/tripleo-image-elements.git
+  branch: stable/train
+  elements_directory: elements
+
+heat-agents:
+  repo: https://github.com/ChameleonCloud/heat-agents.git
+  branch: stable/xena
+  elements_directory: .

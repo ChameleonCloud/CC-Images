@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# See the official pip-cache element for context
+export PIP_CACHE_DIR="/tmp/pip"
+# Legacy
+export PIP_DOWNLOAD_CACHE="${PIP_CACHE_DIR}"
