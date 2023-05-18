@@ -129,7 +129,7 @@ def do_push(
                 disk_format=disk_format,
                 container_format="bare",
                 meta=image.metadata,
-                store="swift",
+                stores=["swift"],
             )
 
             new_image_failed = False
