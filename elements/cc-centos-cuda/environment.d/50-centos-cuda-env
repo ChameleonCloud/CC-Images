@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# The 5XX and higher drivers have issues on some of our older GPUs.
+# The 470 driver seems to work just fine everywhere
+#export DIB_NVIDIA_DRIVER_VERSION=latest-dkms
+#export DIB_NVIDIA_CUDA_VERSION=
