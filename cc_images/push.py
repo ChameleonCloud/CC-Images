@@ -5,6 +5,7 @@ from datetime import datetime
 
 import openstack
 from openstack.image.v2.image import Image
+from openstack.image.v2.service_info import Store
 
 from cc_images.image import ChameleonImage
 from cc_images.sites import ChameleonSite
@@ -128,6 +129,7 @@ def do_push(
                 disk_format=disk_format,
                 container_format="bare",
                 meta=image.metadata,
+                store="swift",
             )
 
             new_image_failed = False
