@@ -23,7 +23,7 @@ ufw default deny incoming || true
 # Instead, create a rc.local file, this will be executed by systemd rc-local.service on boot
 cat > /etc/rc.local <<- 'EOM'
 #!/bin/sh
-echo "ufw --force enable"
+ufw --force enable
 EOM
 # Ensure that /etc/rc.local is executable
 chmod +x /etc/rc.local
