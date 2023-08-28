@@ -17,7 +17,13 @@ ufw allow from 192.168.0.0/16
 ufw default deny incoming || true
 
 # Enable ufw
+# UFW can't run inside the chroot during image build, causing errors if we enable it here
+# ufw --force enable
+
+# Instead, create a rc.local file, this will be executed by systemd rc-local.service on boot
+cat > /etc/rc.local <<- 'EOM'
+#!/bin/sh
 ufw --force enable
-echo "ufw --force enable" >> /etc/rc.local
+EOM
 # Ensure that /etc/rc.local is executable
 chmod +x /etc/rc.local
