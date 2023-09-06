@@ -38,21 +38,21 @@ cmdline = parse_args()
 # who originally ran the script
 CC_IMAGES_PARENT_UID_ENV = "CC_IMAGES_PARENT_UID"
 CC_IMAGES_PARENT_GID_ENV = "CC_IMAGES_PARENT_GID"
-# Handle required permissions
-if not os.geteuid() == 0:
-    LOG.warning(
-        "This script needs to be run as root in order for disk-image-create to work."
-    )
-    time.sleep(1)
-    os.execve(
-        "/usr/bin/sudo",
-        ["-E", "-S", sys.executable, *sys.argv],
-        os.environ
-        | {
-            CC_IMAGES_PARENT_UID_ENV: str(os.getuid()),
-            CC_IMAGES_PARENT_GID_ENV: str(os.getgid()),
-        },
-    )
+# # Handle required permissions
+# if not os.geteuid() == 0:
+#     LOG.warning(
+#         "This script needs to be run as root in order for disk-image-create to work."
+#     )
+#     time.sleep(1)
+#     os.execve(
+#         "/usr/bin/sudo",
+#         ["-E", "-S", sys.executable, *sys.argv],
+#         os.environ
+#         | {
+#             CC_IMAGES_PARENT_UID_ENV: str(os.getuid()),
+#             CC_IMAGES_PARENT_GID_ENV: str(os.getgid()),
+#         },
+#     )
 
 
 def _restore_build_ownership():
