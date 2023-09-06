@@ -112,7 +112,11 @@ def do_push(
                 disk_format = "raw"
                 file_path = image.raw_path
 
-            if connection.current_project.name == "openstack":
+
+            current_project_id = connection.current_project
+            current_project = connection.identity.get_project(current_project_id)
+
+            if current_project.name == "openstack":
                 # If we're uploading via the openstack project,
                 # then this is an official push
                 visibility = "public"
