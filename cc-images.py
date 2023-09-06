@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 """
 This script acts as a wrapper around disk-image-create. Any configuration for disk-image-create
