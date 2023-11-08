@@ -4,18 +4,14 @@ import logging
 import os.path
 from datetime import datetime
 from functools import cached_property
-from typing import Any
+from typing import Any, Union
 
 import git
 
 from cc_images.args import CCImagesArgs
 from cc_images.artifacts import BuildArtifact
-from cc_images.config import (
-    _read_images_yaml,
-    Architecture,
-    IMAGE_CACHE_PATH,
-    IMAGE_OUTPUT_PATH,
-)
+from cc_images.config import (IMAGE_CACHE_PATH, IMAGE_OUTPUT_PATH,
+                              Architecture, _read_images_yaml)
 
 LOG = logging.getLogger(__name__)
 
@@ -58,13 +54,13 @@ class ChameleonImage:
     def __init__(
         self,
         base_name: str,
-        parents: list["ChameleonImage"],
+        parents: "list[ChameleonImage]",
         arch: Architecture,
         baremetal_only: bool,
-        distro: str | None,
-        distro_release: str | None,
-        variant: str | None,
-        artifacts: list[BuildArtifact],
+        distro: Union[str,None],
+        distro_release:Union[str,None],
+        variant: Union[str,None],
+        artifacts: "list[BuildArtifact]",
     ):
         self.base_name = base_name
         self.parents: list[ChameleonImage] = parents or []
@@ -87,7 +83,7 @@ class ChameleonImage:
             self.variant = self.parents[0].variant
         self.artifacts = artifacts
 
-    def __eq__(self, other: str | type["ChameleonImage"]) -> bool:
+    def __eq__(self, other) -> bool:
         if isinstance(other, ChameleonImage):
             return self.base_name == other.base_name
         return self.base_name == other
@@ -123,7 +119,7 @@ class ChameleonImage:
         return f"{self.name}-{self.build_timestamp}"
 
     @property
-    def metadata(self) -> dict[str, Any]:
+    def metadata(self) -> "dict[str, Any]":
         return {
             "build-distro": self.distro,
             "build-release": self.distro_release,
@@ -173,7 +169,7 @@ class ChameleonImage:
         else:
             return qcow_exists and os.path.exists(self.raw_path)
 
-    def has_child(self, child: type["ChameleonImage"] | str) -> bool:
+    def has_child(self, child) -> bool:
         return child in self.children or any(c.has_child(child) for c in self.children)
 
     def should_build_with(self, cmdline: CCImagesArgs) -> bool:
@@ -197,7 +193,7 @@ class ChameleonImage:
         return False
 
 
-def resolve_image_hierarchy(cmdline: CCImagesArgs) -> list[ChameleonImage]:
+def resolve_image_hierarchy(cmdline: CCImagesArgs) -> "list[ChameleonImage]":
     """
     Loads images.yaml and builds a hierarchy of all the supported images.
     Returns a list of all images that will be built
@@ -261,7 +257,7 @@ def resolve_image_hierarchy(cmdline: CCImagesArgs) -> list[ChameleonImage]:
     LOG.info("Resolved image config")
     LOG.info("Determining which images should be built for max efficiency")
 
-    def get_images_to_build(images_in: list[ChameleonImage]) -> list[ChameleonImage]:
+    def get_images_to_build(images_in: "list[ChameleonImage]") -> "list[ChameleonImage]":
         """
         Iterates over images and creates a list of all the images that should be built directly.
         See ChameleonImages.should_build_with for more context

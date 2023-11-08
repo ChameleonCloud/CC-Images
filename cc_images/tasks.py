@@ -20,11 +20,11 @@ from cc_images.third_party import ensure_third_party_elements
 LOG = logging.getLogger(__name__)
 
 
-def _killall(proclist: list[multiprocessing.Process]):
+def _killall(proclist: "list[multiprocessing.Process]"):
     for proc in proclist:
         proc.kill()
 
-def run_tasks(cmdline: CCImagesArgs, images_to_run: list[ChameleonImage]):
+def run_tasks(cmdline: CCImagesArgs, images_to_run: "list[ChameleonImage]"):
     """
     Defines what tasks cc-images has to run, and queues them asynchronously
     """

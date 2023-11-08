@@ -63,7 +63,7 @@ class ElementSource:
         return os.path.join(self.path, self.elements_dir)
 
 
-THIRD_PARTY_ELEMENT_SOURCES: list[ElementSource] = []
+THIRD_PARTY_ELEMENT_SOURCES: "list[ElementSource]" = []
 
 
 def ensure_third_party_elements():

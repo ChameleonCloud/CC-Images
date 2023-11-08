@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 
 def do_build(
     image: ChameleonImage,
-    deps: list[multiprocessing.Condition],
+    deps: "list[multiprocessing.Condition]",
     semaphore: multiprocessing.Semaphore,
     finished_building: multiprocessing.Condition,
 ) -> None:
@@ -48,9 +48,15 @@ def do_build(
         "ELEMENTS_PATH": ":".join(available_element_sources),
         "DIB_IMAGE_CACHE": image.cache_path,
         "DIB_DEBUG_TRACE": "1",
-    } | {a.name: a.download_url for a in image.artifacts}
+    }
 
-    os.environ |= env
+    # add list of artifacts to environment?
+    for a in image.artifacts:
+        if a.name:
+            env[a.name] = a.download_url
+
+
+    os.environ.update(env)
     if image.baremetal_only:
         disk_format = "qcow2"
     else:
@@ -77,7 +83,7 @@ def do_build(
         # but it just hard execs into a bash script, overwriting this process.
         # When that happens, the code after this point never runs.
         # Because of this, we have to run it as yet another subprocess.
-        proc = subprocess.run(args, env=os.environ | env)
+        proc = subprocess.run(args, env=os.environ)
         if error := proc.returncode:
             LOG.error(
                 "Error executing disk-image-create. "

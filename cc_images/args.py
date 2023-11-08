@@ -15,8 +15,8 @@ class CCImagesArgs:
         do_push: bool,
         destroy_cache: bool,
         n_tasks: int,
-        arch: list[Architecture],
-        images: list[str],
+        arch: "list[Architecture]",
+        images: "list[str]",
     ):
         self.do_build: bool = do_build
         self.do_push: bool = do_push
