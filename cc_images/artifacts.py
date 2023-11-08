@@ -1,3 +1,5 @@
+from typing import Union
+
 import openstack
 
 
@@ -13,8 +15,7 @@ class BuildArtifact:
         self.conn = openstack.connect(cloud=site)
 
     @property
-    def download_url(self) -> str:
-        return self.conn.object_store.generate_temp_url(
+    def download_url(self) -> Union[str, None]:
             path=f"/v1/AUTH_{self.conn.current_project_id}/{self.obj}",
             seconds=60 * 60,
             method="GET",

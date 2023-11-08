@@ -10,7 +10,7 @@ class ChameleonSite:
         self.cloud = cloud
 
 
-def get_sites() -> list[ChameleonSite]:
+def get_sites() -> "list[ChameleonSite]":
     """
     Loads sites.yaml
     """

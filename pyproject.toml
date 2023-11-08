@@ -5,7 +5,7 @@ description = ""
 authors = ["Chameleon <contact@chameleoncloud.org>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.8"
 diskimage-builder = "^3.29.0"
 GitPython = "^3.1.31"
 openstacksdk = "^1.0.1"
