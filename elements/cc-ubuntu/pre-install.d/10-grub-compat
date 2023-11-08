@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# If this file is present, it overides changes to /etc/default/grub
+# https://bugs.launchpad.net/vmbuilder/+bug/1692471
+rm -f /etc/default/grub.d/50-cloudimg-settings.cfg || true
