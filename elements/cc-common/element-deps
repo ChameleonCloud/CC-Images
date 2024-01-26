@@ -3,7 +3,7 @@ cloudfuse
 dhcp-all-interfaces
 python3
 snapshot
-ssh
 ufw
-vendordata
 vm
+install-static
+install-bin

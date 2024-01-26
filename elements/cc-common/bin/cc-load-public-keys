@@ -1,20 +1,6 @@
 #!/bin/bash
 
-if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
-  set -x
-fi
-set -eu
-set -o pipefail
-
-# script for authorizing user's SSH keys
-cat >/etc/copy_user_ssh_keys <<-'EOM'
-#!/bin/bash
-
 SSH_KEYPAIRS=$(cc-read-vendordata "ssh_keypairs" | tr -d "\n")
 KEYPAIRS=$(python3 -c "import json; print('\n'.join(obj['keypair']['public_key'] for obj in json.loads('$SSH_KEYPAIRS', strict=False)))")
 
 echo -e "$KEYPAIRS" >> /home/cc/.ssh/authorized_keys
-
-EOM
-
-chmod a+x /etc/copy_user_ssh_keys

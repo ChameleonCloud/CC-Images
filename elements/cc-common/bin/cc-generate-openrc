@@ -1,0 +1,8 @@
+#!/bin/bash
+
+OPENRC=$(cc-read-vendordata "openrc")
+
+if [ "${OPENRC}" != "null" ]; then
+  cc-read-vendordata "openrc" >  /home/cc/openrc
+  sed -i 's/^ *//g' /home/cc/openrc
+fi
