@@ -1,6 +1,5 @@
 block-device-efi
 cc-cloudfuse
-python3
 snapshot
 ufw
 vm
