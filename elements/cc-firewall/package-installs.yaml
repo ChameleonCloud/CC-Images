@@ -1,0 +1,4 @@
+---
+firewalld:
+ufw:
+  uninstall: True
