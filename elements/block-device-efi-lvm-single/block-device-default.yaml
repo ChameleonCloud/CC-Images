@@ -1,0 +1,48 @@
+- local_loop:
+    name: image0
+
+- partitioning:
+    base: image0
+    label: gpt
+    partitions:
+      - name: ESP
+        type: 'EF00'
+        size: 550MiB
+        mkfs:
+          type: vfat
+          mount:
+            mount_point: /boot/efi
+            fstab:
+              options: "defaults"
+              fsck-passno: 2
+      - name: BSP
+        type: 'EF02'
+        size: 8MiB
+      - name: root
+        flags: [ boot ]
+        size: 100%
+- lvm:
+    name: lvm
+    base: [ root ]
+    pvs:
+        - name: pv
+          base: root
+          options: [ "--force" ]
+    vgs:
+        - name: vg
+          base: [ "pv" ]
+          options: [ "--force" ]
+    lvs:
+        - name: lv_root
+          base: vg
+          extents: 100%VG
+- mkfs:
+    name: fs_root
+    base: lv_root
+    type: ext4
+    label: cloudimg-rootfs
+    mount:
+        mount_point: /
+        fstab:
+            options: "defaults"
+            fsck-passno: 1
