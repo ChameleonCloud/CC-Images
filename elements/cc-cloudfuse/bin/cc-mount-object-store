@@ -1,0 +1,16 @@
+#!/bin/bash
+mkdir /home/cc/my_mounting_point
+
+TOKEN=$(cc-read-vendordata "service_token")
+PROJECT_ID=$(cc-read-vendordata "project_id")
+AUTH_URL_V3=$(cc-read-vendordata "auth_url_v3")
+REGION=$(cc-read-vendordata "region")
+
+cc-cloudfuse mount /home/cc/my_mounting_point -o authtoken="$TOKEN",projectid="$PROJECT_ID",authurl="$AUTH_URL_V3",region="$REGION"
+RESULT=$?
+if [ $RESULT -eq 0 ]; then
+  sudo mv /etc/auto_mount_readme /home/cc/README
+  sudo chown -R cc:cc /home/cc/README
+else
+  rm -rf /home/cc/my_mounting_point
+fi

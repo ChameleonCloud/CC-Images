@@ -1,5 +1,5 @@
 block-device-efi
-cloudfuse
+cc-cloudfuse
 python3
 snapshot
 ufw
