@@ -1,5 +1,0 @@
----
-linux-generic-hwe-22.04:
-  when: DIB_RELEASE = jammy
-linux-generic-hwe-20.04:
-  when: DIB_RELEASE = focal
