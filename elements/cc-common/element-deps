@@ -5,3 +5,4 @@ cc-firewall
 vm
 install-static
 install-bin
+cc-timesync
