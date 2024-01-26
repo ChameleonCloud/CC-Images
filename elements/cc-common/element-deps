@@ -1,6 +1,6 @@
 block-device-efi
 cc-cloudfuse
-snapshot
+cc-snapshot
 ufw
 vm
 install-static
