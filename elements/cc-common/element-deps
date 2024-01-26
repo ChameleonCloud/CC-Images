@@ -1,6 +1,5 @@
 block-device-efi
 cloudfuse
-dhcp-all-interfaces
 python3
 snapshot
 ufw
