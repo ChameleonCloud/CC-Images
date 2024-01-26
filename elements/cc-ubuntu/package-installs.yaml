@@ -1,8 +1,0 @@
----
-grub-common:
-python3-wheel:
-qemu-utils:
-# ignore dependency
-# https://bugs.launchpad.net/ubuntu/+source/flash-kernel/+bug/1914712
-flash-kernel-:
-  arch: arm64

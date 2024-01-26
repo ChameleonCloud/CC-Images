@@ -3,3 +3,5 @@ build-essential:
   when: DISTRO_NAME = ubuntu
 git:
 jq:
+linux-generic:
+  when: DISTRO_NAME = ubuntu
