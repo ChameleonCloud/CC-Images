@@ -33,6 +33,9 @@ Documentation = "https://github.com/unknown/cc-images#readme"
 Issues = "https://github.com/unknown/cc-images/issues"
 Source = "https://github.com/unknown/cc-images"
 
+[project.scripts]
+build_images = "cc_images.main:main"
+
 [tool.hatch.version]
 source = "vcs"
 
