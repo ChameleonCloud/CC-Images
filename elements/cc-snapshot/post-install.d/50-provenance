@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Writes a base64-encoded JSON (to avoid escape issues) stored in an env
+# var "DIB_CC_PROVENANCE" to a file stored in /opt/chameleon. Provides
+# information about the base image if it is snapshotted later.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+  set -x
+fi
+set -eu
+set -o pipefail
+
+DIB_CC_PROVENANCE=${DIB_CC_PROVENANCE:-e30K} # e30K = '{}\n'
+
+CHAMELEON_DIR=/opt/chameleon
+mkdir -p $CHAMELEON_DIR
+echo "$DIB_CC_PROVENANCE" | base64 -d | python3 -mjson.tool >"$CHAMELEON_DIR"/provenance.json

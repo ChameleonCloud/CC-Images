@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+
+TOOLKIT_REQUIREMENTS_URL="https://raw.githubusercontent.com/ChameleonCloud/cc-toolkit/main/requirements.txt"
+
+VENV_PATH_BASE=/opt/chameleon
+VENV_DIR=.venv
+VENV_PATH="${VENV_PATH_BASE}/${VENV_DIR}"
+
+mkdir -p /opt/chameleon
+python3 -m venv $VENV_PATH
+
+$VENV_PATH/bin/pip install --upgrade \
+    pip \
+    wheel
+$VENV_PATH/bin/pip install -r ${TOOLKIT_REQUIREMENTS_URL}
+
+# add the new command to PATH
+ln -s /opt/chameleon/.venv/bin/openstack /usr/local/bin/openstack
+
+# # Create profile script
+# cat >> /root/.bashrc <<-EOM
+# if [ -d "/opt/chameleon/.venv/bin" ] ; then
+#     export PATH="$PATH:/opt/chameleon/.venv/bin"
+# fi
+# EOM

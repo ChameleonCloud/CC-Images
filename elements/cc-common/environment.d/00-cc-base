@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# speed up boot times
+export DIB_GRUB_TIMEOUT=0
+
+# set default cmdline
+# DIB_BOOTLOADER_DEFAULT_CMDLINE="console=tty0 console=ttyS0,115200 pci=realloc=off"

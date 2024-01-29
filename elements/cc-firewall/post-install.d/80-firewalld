@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# fix unit file, see
+# https://github.com/firewalld/firewalld/commit/57e8a96bce294c2d07bdc740dc913488f68b3a3b
+
+cp /lib/systemd/system/firewalld.service /etc/systemd/system/firewalld.service \
+&& sed -i='' 's/Before=network-pre.target/Before=network.target/' /etc/systemd/system/firewalld.service \
+&& sed -i='' '/Wants=/d' /etc/systemd/system/firewalld.service \
+&& sed -i='' 's,^Conflicts=.*$,& ufw\.service,' /etc/systemd/system/firewalld.service
+
+rm -f /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service \
+&& ln -s /etc/systemd/system/firewalld.service /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service
+
+
+systemctl enable firewalld.service
+firewall-offline-cmd --set-log-denied=all

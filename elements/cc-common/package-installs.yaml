@@ -1,41 +1,7 @@
 ---
-ansible:
-autoconf:
-automake:
 build-essential:
   when: DISTRO_NAME = ubuntu
-bzip2:
-chrony:
-collectd:
-curl:
-diffstat:
-emacs:
-g++:
-gcc:
-gdb:
-gfortran:
 git:
-initramfs-tools:
-  when: DISTRO_NAME = ubuntu
 jq:
-libstdc++:
-libtool:
-libvirt:
-linux-firmware:
-make:
-openssl:
-nfs-common:
-nscd:
-patchutils:
-puppet:
-  # As of now, puppet supports only its clients, not its servers on CentOS 9
-  when: DIB_RELEASE != 9-stream
-rcs:
-subversion:
-swig:
-systemtap:
-systemtap-client:
-systemtap-runtime:
-systemtap-sdt-dev:
-unzip:
-vim:
+linux-generic:
+  when: DISTRO_NAME = ubuntu

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# If this flag is set, the python binary will not be set to point at python3
-# Avoid using if possible. Only exists for legacy compatibility.
-export DIB_DISABLE_DEFAULT_PYTHON3=0
