@@ -59,9 +59,10 @@ by the positional arguments, and may also build additional images if it improves
 for the requested images.
 
 Any images which don't depend on each other will be built in parallel if the number specified
-by `-t`
-is greater than 1. These dependencies (and other configurations) are decided
+by `-t` is greater than 1. These dependencies (and other configurations) are decided
 by [images.yaml](cc_images/images.yaml), not the element hierarchy.
+
+`ARCH=arm64` can be used to build arm images on x86_64 systems using qemu.
 
 ### Artifacts
 
