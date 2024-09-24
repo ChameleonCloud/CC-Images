@@ -6,4 +6,11 @@ fi
 set -eu
 set -o pipefail
 
-systemctl enable chrony.service
+case "$DISTRO_NAME" in
+    "centos")
+        systemctl enable chronyd.service
+        ;;
+    "ubuntu")
+        systemctl enable chrony.service
+        ;;
+esac

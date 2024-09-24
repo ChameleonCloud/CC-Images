@@ -6,3 +6,5 @@ redhat-lsb-core:
 redhat-rpm-config:
 rpm-build:
 rpm-sign:
+nscd:
+chrony:
