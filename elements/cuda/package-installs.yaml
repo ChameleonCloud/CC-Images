@@ -1,2 +1,7 @@
 ---
 cuda-12-3:
+  when:
+  - DIB_RELEASE = focal
+  - DIB_RELEASE = jammy
+cuda-12-6:
+  when: DIB_RELEASE = noble
