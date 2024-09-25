@@ -70,9 +70,9 @@ options:
 Default config (YAML) files are located directly in the [`cc_images`](cc_images) package. Different
 files can be used by setting several environment variables:
 
-* `CC_IMAGES_CONFIG`: Overrides [images.yaml](cc_images/images.yaml)
-* `CC_SITES_CONFIG`: Overrides [sites.yaml](cc_images/sites.yaml)
-* `CC_THIRD_PARTY_ELEMENTS_CONFIG`: Overrides [third-party.yaml](cc_images/third-party.yaml)
+- `CC_IMAGES_CONFIG`: Overrides [images.yaml](cc_images/images.yaml)
+- `CC_SITES_CONFIG`: Overrides [sites.yaml](cc_images/sites.yaml)
+- `CC_THIRD_PARTY_ELEMENTS_CONFIG`: Overrides [third-party.yaml](cc_images/third-party.yaml)
 
 ## Building
 
@@ -132,13 +132,7 @@ as possible.
 
 ### Extending
 
-It's very simple to create a new image/element within `cc-images`. The element should simply be
-defined under the [elements](elements) directory, adhering as closely as possible
-to [OpenStack's guidelines](https://docs.openstack.org/diskimage-builder/latest/developer/developing_elements.html)
-. The element can take dependencies on any elements already included in the [elements](elements)
-directory, elements defined by default
-in [`diskimage-builder`](https://github.com/openstack/diskimage-builder/tree/master/diskimage_builder/elements)
-, or imported [third-party elements](#third-party-elements).
+It's very simple to create a new image/element within `cc-images`. The element should simply be defined under the [elements](elements) directory, adhering as closely as possible to [OpenStack's guidelines](https://docs.openstack.org/diskimage-builder/latest/developer/developing_elements.html). The element can take dependencies on any elements already included in the [elements](elements) directory, elements defined by default in [`diskimage-builder`](https://github.com/openstack/diskimage-builder/tree/master/diskimage_builder/elements), or imported [third-party elements](#third-party-elements).
 
 If the new element describes an image, the image must also be defined
 in [images.yaml](cc_images/images.yaml) in order for `cc-images` to build it.
@@ -156,11 +150,22 @@ elements defined here will be automatically pulled and imported every time `cc-i
 
 ## Known Issues
 
-* CentOS7 images are non-functioning
-    * There is an issue with the `grub` configuration for UEFI which prevents them from booting
-    * There is an issue with autologin for non-UEFI nodes which prevents them from logging in
+- CentOS7 images are non-functioning
+    - There is an issue with the `grub` configuration for UEFI which prevents them from booting
+    - There is an issue with autologin for non-UEFI nodes which prevents them from logging in
       post-boot
-* CentOS CUDA images are non-functioning
-  * The Nvidia drivers are not loaded by the system
-* The FPGA elements are untested and incomplete
-  * Work on these will continue on more-modern stable operating system then CentOS7
+- CentOS CUDA images are non-functioning
+    - The Nvidia drivers are not loaded by the system
+    - Adding CUDA seems to break the boot for CentOS 9
+- The FPGA elements are untested and incomplete
+    - Work on these will continue on more-modern stable operating system then CentOS7
+
+## Troubleshooting
+`openstack.exceptions.ConfigException: Cloud kvm was not found.`
+- `kvm` is not part of the `clouds.yaml` file:
+    1. Go to [KVM@TACC](https://kvm.tacc.chameleoncloud.org/identity/application_credentials/) and create application credentials
+    2. Edit/create `~/.config/openstack/clouds.yaml` and make sure in `clouds` section its updated to have a `kvm` section
+
+`2024-09-24 13:32:45.713 | chroot: failed to run command 'env': Exec format error`
+- The image is trying to run code that isn't compatible with the architecture. If you're doing an arm build on x86 try `ARCH=arm64` before doing the build.
+

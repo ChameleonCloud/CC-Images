@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -x
+set -o pipefail
+
+# Load Nvidia's apt keys
+nvidia_release="${DIB_DISTRO_VERSION//\./}"
+platform="$(uname -i)"
+keyring_pkg_url=https://developer.download.nvidia.com/compute/cuda/repos/ubuntu"$nvidia_release"/"$platform"/"${DIB_NVIDIA_KEYRING_PKG}"
+cached_pkg="${DIB_IMAGE_CACHE}/cuda/${DIB_NVIDIA_KEYRING_PKG}"
+if [[ ! -f "${cached_pkg}" ]]; then
+  echo "Nvidia keyring package not cached. Downloading a new copy..."
+  wget --show-progress -O "${cached_pkg}" "${keyring_pkg_url}"
+fi
+
+cp "${cached_pkg}" "${TMP_HOOKS_PATH}"
