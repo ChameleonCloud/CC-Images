@@ -5,9 +5,32 @@ It is easy to extend, and takes heavy advantage of build hosts with lots of comp
 
 ## Installation
 
-`cc-images` relies on a few third-party dependencies. It is recommended to create a virtualenv using
-`poetry install` and `poetry env`. If you're building baremetal images, then `qemu-img` must be
-installed on the build host.
+The project uses a virtualenv and has some dependency requirements, to set it up:
+1. `python -m venv .venv`: create the virtualenv
+2. `. .venv/bin/activate`: to activate the virtualenv
+3. `pip install .`: to install dependencies of the project
+
+Note: Using system python packages can result in broken images. It's highly recommended to use a virtualenv.
+
+On the system you'll need the following additional packages:
+
+```
+apt-get install \
+  python3 \
+  python3-dev \
+  python3-venv \
+  qemu-utils \
+  qemu-user \
+  qemu-user-binfmt \
+  git \
+  gcc \
+  cpio \
+  xz-utils  \
+  dosfstools \
+  zstd
+```
+
+Note: If you're building baremetal images, then `qemu-img` must be installed on the build host.
 
 ## Usage
 

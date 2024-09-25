@@ -1,18 +1,16 @@
-[tool.poetry]
-name = "cc-images"
-version = "0.1.0"
-description = ""
-authors = ["Chameleon <contact@chameleoncloud.org>"]
-
-[tool.poetry.dependencies]
-python = "^3.8"
-diskimage-builder = "^3.29.0"
-GitPython = "^3.1.31"
-openstacksdk = "^1.0.1"
-
-[tool.poetry.dev-dependencies]
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
 
+[project]
+name = "cc-images"
+requires-python = ">=3.8"
+dependencies = [
+    "diskimage-builder>3.29.0",
+    "GitPython>3.1.31",
+    "openstacksdk>1.0.1"
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+packages = ["cc_images"]
