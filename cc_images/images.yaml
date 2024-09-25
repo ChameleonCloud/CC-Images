@@ -48,6 +48,22 @@ CC-Ubuntu22.04-CUDA:
   provenance:
     variant: gpu
 
+CC-Ubuntu24.04:
+  arch:
+    - amd64
+    - arm64
+  provenance:
+    distro: ubuntu
+    release: noble
+    variant: base
+
+CC-Ubuntu24.04-CUDA:
+  depends:
+    - CC-Ubuntu24.04
+  baremetal-only: true
+  provenance:
+    variant: gpu
+
 CC-CentOS7:
   provenance:
     distro: centos

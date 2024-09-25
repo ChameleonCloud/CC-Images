@@ -59,9 +59,12 @@ by the positional arguments, and may also build additional images if it improves
 for the requested images.
 
 Any images which don't depend on each other will be built in parallel if the number specified
-by `-t`
-is greater than 1. These dependencies (and other configurations) are decided
+by `-t` is greater than 1. These dependencies (and other configurations) are decided
 by [images.yaml](cc_images/images.yaml), not the element hierarchy.
+
+`ARCH=arm64` can be used to build arm images on x86_64 systems using qemu.
+
+It is better to build on a system within openstack; this is primary due to bandwidth overhead.
 
 ### Artifacts
 
@@ -141,3 +144,13 @@ elements defined here will be automatically pulled and imported every time `cc-i
   * The Nvidia drivers are not loaded by the system
 * The FPGA elements are untested and incomplete
   * Work on these will continue on more-modern stable operating system then CentOS7
+
+## Troubleshooting
+`openstack.exceptions.ConfigException: Cloud kvm was not found.`
+- `kvm` is not part of the `clouds.yaml` file:
+    1. Go to [KVM@TACC](https://kvm.tacc.chameleoncloud.org/identity/application_credentials/) and create application credentials
+    2. Edit/create `~/.config/openstack/clouds.yaml` and make sure in `clouds` section its updated to have a `kvm` section
+
+`2024-09-24 13:32:45.713 | chroot: failed to run command 'env': Exec format error`
+- The image is trying to run code that isn't compatible with the architecture. If you're doing an arm build on x86 try `ARCH=arm64` before doing the build.
+
