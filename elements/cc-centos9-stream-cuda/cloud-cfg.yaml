@@ -1,0 +1,105 @@
+---
+datasource_list: [ Ec2, None ]
+
+users:
+  - default
+  - name: ccadmin
+    uid: '1010'
+    lock-passwd: true
+    gecos: Chameleon Cloud Admin User
+    groups: [ wheel, adm, systemd-journal ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIP5yCb+pms83A9f0JPDx+ILOAYy7OoxPf5MjZlL+JW/bWRKuMmQDYLi6F22QoFlRrL0LsNsR8m28F/4uox81QOVq6D+uXODUe0FLJF1SLowxVrhvtEQSb0p2Ep3F3Isk6niEVTYNz+Uyx1s5jZ3xF1CjUFt8fhggkZEn+mAxux8FQO35mJF0mbEVNAA/ZiApLmM8/oBxtOd9T3QHEoXD5wensAWlGk2HdQVUMHNFRLZPl3Oo4BHYI3CbD/mu6dOZLOF/bvJF6dnwmQI+JflSLHLwGObKdi96w+sOEQfuYA1hMCes4M7rTkrNwAoLJUxZjr/l1/EgJJbbEIGiKOUW4TtNTiaIfV58ynhKdlvd7sIEquWGnPTtz3qviSkEmPiub48mt99sMXbHCNOFTz4dIwtjC2RQEWbRbccdVYRYBXXM9p5lThcRiyWrgkneIi/wfaRCKXzpzhSREgWWrFQ6/8p0ZbLeT/UGP6B0Lo7u1MsTSGa54VzK8AfhYJLMXJH/V+59g0iMN/owcUknI6KdLrsP9TW9jB7mKwtHBHyxC4IGcEKwwT+rW1hyz3JfHr0GEzt4FW86Ryyv2nb4yB4RC/R8YkWOM9mSJsQbZkAmXVWVJLCzE36cH0SgyFZvYfW2O7Ly+pwnVIgoPfowRTHCxCyO07qI+S22WLEH1HNw98w== Chameleon admin access
+
+disable_root: 1
+ssh_pwauth: 0
+
+locale_configfile: /etc/sysconfig/i18n
+mount_default_fields: [ ~, ~, 'auto', 'defaults,nofail', '0', '2' ]
+resize_rootfs_tmp: /dev
+preserve_hostname: false
+
+datasource:
+  OpenStack:
+    metadata_urls:
+      - "http://169.254.169.254"
+    #timeout: 5 # (default 5)
+    #retries: 5 # (default 5)
+    #max_wait: 10 # (default -1)
+
+cloud_init_modules:
+  - migrator
+  - seed_random
+  - bootcmd
+  - growpart
+  - resizefs
+  - set_hostname
+  - update_hostname
+  - update_etc_hosts
+  - ca-certs
+  - rsyslog
+  - users-groups
+  - ssh
+  - write-files
+
+cloud_config_modules:
+  - emit_upstart
+  - disk_setup
+  - mounts
+  - ssh-import-id
+  - locale
+  - set-passwords
+  - yum-add-repo
+  - package-update-upgrade-install
+  - landscape
+  - timezone
+  - puppet
+  - chef
+  - mcollective
+  - disable-ec2-metadata
+  - runcmd
+  - byobu
+
+cloud_final_modules:
+  - rightscale_userdata
+  - scripts-vendor
+  - scripts-per-once
+  - scripts-per-boot
+  - scripts-per-instance
+  - scripts-user
+  - ssh-authkey-fingerprints
+  - keys-to-console
+  - phone-home
+  - final-message
+  - power-state-change
+
+system_info:
+  default_user:
+    name: cc
+    uid: '1000'
+    lock_passwd: true
+    gecos: Chameleon Cloud User
+    groups: [ wheel, adm, systemd-journal ]
+    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
+    shell: /bin/bash
+  distro: rhel
+  paths:
+    cloud_dir: /var/lib/cloud
+    templates_dir: /etc/cloud/templates
+  ssh_svcname: sshd
+
+write_files:
+  - path: /home/cc/.bash_profile
+    content: |
+      if [ -f "$HOME/openrc" ]; then
+          source "$HOME/openrc"
+      fi
+    owner: cc:cc
+    append: true
+
+runcmd:
+  - su cc -c /etc/auto_generate_openrc
+  - su cc -c /etc/copy_user_ssh_keys
+  - su cc -c /etc/auto_mount_object_store

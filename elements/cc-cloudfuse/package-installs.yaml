@@ -15,3 +15,9 @@ libxml-dev:
   build-only: True
 neon:
   when: DISTRO_NAME = centos
+gcc:
+  when: DISTRO_NAME = centos
+gcc-c++:
+  when: DISTRO_NAME = centos
+make:
+  when: DISTRO_NAME = centos

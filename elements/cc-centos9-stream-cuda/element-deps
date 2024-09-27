@@ -1,2 +1,3 @@
-cc-centos-cuda
-cc-centos9-stream
+centos
+cc-common
+disable-selinux
