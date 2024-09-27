@@ -65,10 +65,6 @@ The CC user account (TODO: Make this configurable), must also have the following
         1. TODO: examine cloud-init's "public keys" feature, rather than our reimplementation.
 4. At sites with an object store, the project's buckets should be `fuse` mounted to `/home/cc/my_mounting_point`
 
-### CUDA images
-Ensure that the following have been added:
-- `pci=realloc=off` is added to the kernel commandline
-- `nvidia-smi` works on a system with a GPU
 
 ### Additional image features
 
@@ -94,6 +90,18 @@ This implies:
 2. Image provenance data is present on disk
 
 CC-Snapshot will only back up a single root partition, and will then regenerate the necessary EFI and BIOS partitions, grub configuration, and so on, before creating a new glance disk image.
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Build Process
 The contents of the rootfs must simply be bootable, but are currently provided via the following mechansim:
