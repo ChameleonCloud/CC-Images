@@ -4,6 +4,4 @@ cuda-12-3:
   - DIB_RELEASE = focal
   - DIB_RELEASE = jammy
 cuda-12-6:
-  when: 
-  - DIB_RELEASE = noble
-  - DIB_RELEASE = 9-stream
+  when: DIB_RELEASE = noble
