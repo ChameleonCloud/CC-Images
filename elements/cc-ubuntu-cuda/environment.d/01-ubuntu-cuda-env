@@ -1,3 +1,4 @@
 #!/bin/bash
 
 export DIB_NVIDIA_KEYRING_PKG=cuda-keyring_1.0-1_all.deb
+export DIB_CUDA_VERSION=${DIB_CUDA_VERSION:-12}

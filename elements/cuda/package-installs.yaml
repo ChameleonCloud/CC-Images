@@ -1,3 +1,14 @@
 ---
+cuda-libraries-12-6:
+  when: DIB_CUDA_VERSION = 12
 cuda-toolkit-12-6:
-cuda-drivers-560:
+  when: DIB_CUDA_VERSION = 12
+nvidia-driver-560:
+  when: DIB_CUDA_VERSION = 12
+
+cuda-libraries-11-4:
+  when: DIB_CUDA_VERSION = 11
+cuda-toolkit-11-4:
+  when: DIB_CUDA_VERSION = 11
+nvidia-driver-470:
+  when: DIB_CUDA_VERSION = 11
