@@ -25,6 +25,13 @@ CC-Ubuntu20.04:
     release: focal
     variant: base
 
+CC-Ubuntu20.04-CUDA11:
+  depends:
+    - CC-Ubuntu20.04
+  baremetal-only: true
+  provenance:
+    variant: gpu
+
 CC-Ubuntu20.04-CUDA:
   depends:
     - CC-Ubuntu20.04
