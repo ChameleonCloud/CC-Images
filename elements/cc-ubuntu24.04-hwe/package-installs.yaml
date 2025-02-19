@@ -1,0 +1,9 @@
+linux-image-generic:
+   arch: amd64
+   when:
+    - DIB_RELEASE != noble
+
+linux-generic-hwe-24.04:
+  arch: amd64
+  when:
+   - DIB_RELEASE = noble
