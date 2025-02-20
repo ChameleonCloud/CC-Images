@@ -1,9 +1,7 @@
-linux-image-generic:
-   arch: amd64
-   when:
-    - DIB_RELEASE != noble
-
 linux-generic-hwe-24.04:
-  arch: amd64
-  when:
-   - DIB_RELEASE = noble
+# uninstall all kernel 6.8 related stuff
+# workaround for linux-image-generic being installed by `ubuntu` element
+# and `linux-generic` being installed by cc-common element
+linux-*-6.8*-generic:
+  phase: post-install.d
+  uninstall: True
