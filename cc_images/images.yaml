@@ -67,10 +67,11 @@ CC-Ubuntu24.04:
 CC-Ubuntu24.04-hwe:
   arch:
     - amd64
+    - arm64
   provenance:
     distro: ubuntu
     release: noble
-    variant: base
+    variant: hwe
 
 CC-Ubuntu24.04-CUDA:
   depends:
