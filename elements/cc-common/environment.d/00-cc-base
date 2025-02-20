@@ -1,7 +1,19 @@
 #!/bin/bash
 
-# speed up boot times
+# ``DIB_GRUB_TIMEOUT`` sets the ``grub`` menu timeout.  It defaults to
+#  1 seconds.  Set this to 0 (no timeout) for fast boot times.
 export DIB_GRUB_TIMEOUT=0
 
-# set default cmdline
-# DIB_BOOTLOADER_DEFAULT_CMDLINE="console=tty0 console=ttyS0,115200 pci=realloc=off"
+export DIB_BOOTLOADER_USE_SERIAL_CONSOLE='True'
+export DIB_BOOTLOADER_VIRTUAL_TERMINAL='tty0'
+export DIB_NO_TIMER_CHECK='False'
+
+# ``DIB_BOOTLOADER_DEFAULT_CMDLINE`` sets parameters that are appended
+#  to the ``GRUB_CMDLINE_LINUX_DEFAULT`` values in ``grub.cfg``
+#  configuration. It defaults to ``nofb nomodeset gfxpayload=text``.
+
+# nofb removed, it's a noop
+# nomodeset removed, causes lots of issues all over?
+# gfxpayload=text still ok?
+# pci=realloc=off needed to handle badness with ubuntu and multi-gpus
+export DIB_BOOTLOADER_DEFAULT_CMDLINE="gfxpayload=text pci=realloc=off"
