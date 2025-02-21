@@ -4,10 +4,14 @@ import yaml
 
 
 class ChameleonSite:
-    def __init__(self, name: str, is_baremetal: bool, cloud: str) -> None:
+    def __init__(self, name: str,
+                 is_baremetal: bool,
+                 cloud: str,
+                 image_bucket: str) -> None:
         self.name = name
         self.is_baremetal = is_baremetal
         self.cloud = cloud
+        self.image_bucket = image_bucket
 
 
 def get_sites() -> "list[ChameleonSite]":
@@ -26,5 +30,7 @@ def get_sites() -> "list[ChameleonSite]":
         cloud = site.get("cloud")
         if not cloud:
             raise ValueError("Missing required site attribute cloud")
-        output.append(ChameleonSite(site_name, is_baremetal, cloud))
+        image_bucket = site.get("image_bucket", "chameleon-images")
+        output.append(ChameleonSite(site_name, is_baremetal,
+                                    cloud, image_bucket))
     return output

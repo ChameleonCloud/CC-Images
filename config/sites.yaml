@@ -8,6 +8,7 @@
 CHI@TACC:
   is_baremetal: True
   cloud: tacc
+  image_bucket: chameleon-images
 KVM@TACC:
   is_baremetal: False
   cloud: kvm
