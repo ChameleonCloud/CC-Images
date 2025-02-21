@@ -14,9 +14,10 @@ def get_sites() -> "list[ChameleonSite]":
     """
     Loads sites.yaml
     """
-    this_dir = os.path.dirname(__file__)
-    cc_sites_path = os.getenv("CC_SITES_CONFIG", os.path.join(this_dir, "sites.yaml"))
-    with open(cc_sites_path, "r") as f:
+    application_path = os.path.join(os.path.dirname(__file__), "..")
+    default_sites_path = os.path.join(application_path, "config", "sites.yaml")
+    sites_path = os.getenv("CC_SITES_CONFIG", default_sites_path)
+    with open(sites_path, "r") as f:
         all_sites = yaml.safe_load(f)
     output = []
     for site_name in all_sites:

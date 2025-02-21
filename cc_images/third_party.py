@@ -6,7 +6,7 @@ import git
 import yaml
 from urllib3.util import Url, parse_url
 
-from cc_images.config import BUILD_PATH, _cc_images_path
+from cc_images.config import BUILD_PATH
 
 LOG = logging.getLogger(__name__)
 THIRD_PARTY_PATH = os.path.join(BUILD_PATH, "third-party")
@@ -71,9 +71,12 @@ def ensure_third_party_elements():
     Ensures third-party elements are downloaded and up-to-date
     """
     global THIRD_PARTY_ELEMENT_SOURCES
+    application_path = os.path.join(os.path.dirname(__file__), "..")
+    default_third_party_path = os.path.join(application_path, "config",
+                                            "third-party.yaml")
     third_party_path = os.getenv(
         "CC_THIRD_PARTY_ELEMENTS_CONFIG",
-        os.path.join(_cc_images_path, "third-party.yaml"),
+        default_third_party_path,
     )
     with open(third_party_path, "r") as f:
         element_config = yaml.safe_load(f)
