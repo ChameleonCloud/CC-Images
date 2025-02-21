@@ -15,6 +15,7 @@ class CCImagesArgs:
         do_push: bool,
         destroy_cache: bool,
         n_tasks: int,
+        scope: str,
         arch: "list[Architecture]",
         images: "list[str]",
     ):
@@ -22,6 +23,7 @@ class CCImagesArgs:
         self.do_push: bool = do_push
         self.destroy_cache: bool = destroy_cache
         self.n_tasks: int = n_tasks
+        self.scope: str = scope
         self.arch: list[Architecture] = arch
         self.images: set[str] = set(images)
 
@@ -80,6 +82,16 @@ def parse_args() -> CCImagesArgs:
     )
 
     arg_parser.add_argument(
+        "-s",
+        "--scope",
+        help="The scope for where to push images (supports prod currently). "
+        "By default, this tool operates in prod.",
+        dest="scope",
+        type=str,
+        default="prod",
+    )
+
+    arg_parser.add_argument(
         "-a",
         "--architecture",
         help="Comma-separated list of architectures to build/push. "
@@ -104,6 +116,7 @@ def parse_args() -> CCImagesArgs:
         namespace.do_push,
         namespace.destroy_cache,
         namespace.n_tasks,
+        namespace.scope,
         namespace.architectures,
         namespace.images,
     )

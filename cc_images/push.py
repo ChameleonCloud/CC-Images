@@ -39,6 +39,7 @@ def do_push(
     image: ChameleonImage,
     site: ChameleonSite,
     should_wait_for_build: bool,
+    scope: str,
     semaphore: multiprocessing.Semaphore,
     is_built: multiprocessing.Condition,
 ) -> None:
