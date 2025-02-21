@@ -57,10 +57,7 @@ def do_build(
 
 
     os.environ.update(env)
-    if image.baremetal_only:
-        disk_format = "qcow2"
-    else:
-        disk_format = "raw,qcow2"
+    disk_format = "raw,qcow2"
     LOG.info(f"BUILD {image.name}: {pprint.pformat(env)}")
     args = [
         "disk-image-create",
