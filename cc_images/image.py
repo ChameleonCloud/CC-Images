@@ -129,6 +129,7 @@ class ChameleonImage:
             "build-timestamp": self.build_timestamp,
             "build-tag": self.build_tag,
             "build-ipa": "false",
+            "chameleon-supported": "true",
         }
 
     @property
