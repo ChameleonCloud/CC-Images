@@ -163,6 +163,10 @@ class ChameleonImage:
     def qcow_path(self) -> str:
         return f"{self.base_path}.qcow2"
 
+    @property
+    def provenance_path(self) -> str:
+        return f"{self.base_path}.d/{self.name}_provenance.json"
+
     def local_build_exists(self) -> bool:
         qcow_exists = os.path.exists(self.qcow_path)
         if self.baremetal_only:
