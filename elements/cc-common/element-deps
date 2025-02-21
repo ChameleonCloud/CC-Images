@@ -6,3 +6,4 @@ vm
 install-static
 install-bin
 cc-timesync
+cc-manifest
