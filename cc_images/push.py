@@ -71,7 +71,8 @@ def do_push(
             error = f"Container '{site.image_container}' must already exist."
             raise openstack.exceptions.ResourceNotFound(error)
 
-        container_name = f"{site.image_container}/{scope}/{date_timestamp}"
+        base_container_name = f"{site.image_container}/{scope}"
+        container_name = f"{base_container_name}/{date_timestamp}"
         create_container_if_not_exists(connection, container_name)
 
         push_object(connection,
@@ -85,6 +86,6 @@ def do_push(
         with tempfile.NamedTemporaryFile(delete=True) as temp_file:
             temp_file.write((date_timestamp + "\n").encode('utf-8'))
             temp_file.flush()
-            push_object(connection, temp_file.name, "current", site.name, container_name)
+            push_object(connection, temp_file.name, "current", site.name, base_container_name)
 
         LOG.info(f"PUSH {image.name}->{site.name}: Finished uploading images!")
