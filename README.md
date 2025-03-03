@@ -107,13 +107,20 @@ Push tasks are triggered by the `-p/--push` flag. When a push is triggered, it i
 asynchronously just like builds. If a push is done alongside a build, or the requested image does
 not exist in the cache, the push will wait for its image to be built before executing.
 
-When an image is pushed, `cc-images` first seeks out an existing image under the configured
-account (see [auth](#authentication)) with the same name as the to-be-pushed image. The old image is
-archived by having its name appended with a timestamp. The new image assumes the former name of the
-old image. If uploading the new image fails, the name change for the old image is rolled back.
+When images are pushed, they are transferred to a container in the object store.
+The container structure in the object store is:
+```
+<base container name>/<scope>/<datetime>
+```
 
-If an image only functions on baremetal sites, then it will only be pushed to baremetal sites (
-configured by [images.yaml](cc_images/images.yaml) and [sites.yaml](cc_images/sites.yaml)).
+The base container name is fixed and should be created manually ahead of time. The
+default is `chameleon-images`. The scope supports different images for production, staging,
+and development. The initial implementation should only use `prod` for the scope. Future
+iterations may add support for additional environments. The datetime is generated
+automatically when the image is pushed.
+
+When images are pushed, a new file called `current` is created in the scope level of the
+container. This file contains the datetime stamp that should be used to pull images.
 
 ### Authentication
 
