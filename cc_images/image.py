@@ -129,6 +129,7 @@ class ChameleonImage:
             "build-timestamp": self.build_timestamp,
             "build-tag": self.build_tag,
             "build-ipa": "false",
+            "chameleon-supported": "true",
         }
 
     @property
@@ -161,6 +162,10 @@ class ChameleonImage:
     @property
     def qcow_path(self) -> str:
         return f"{self.base_path}.qcow2"
+
+    @property
+    def provenance_path(self) -> str:
+        return f"{self.base_path}.d/{self.name}_provenance.json"
 
     def local_build_exists(self) -> bool:
         qcow_exists = os.path.exists(self.qcow_path)

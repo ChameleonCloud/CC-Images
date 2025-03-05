@@ -8,15 +8,14 @@ import yaml
 logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 LOG = logging.getLogger(__name__)
 
-_cc_images_path = os.path.dirname(__file__)
-ELEMENTS_PATH = os.path.abspath(os.path.join(_cc_images_path, "..", "elements"))
+application_path = os.path.join(os.path.dirname(__file__), "..")
+ELEMENTS_PATH = os.path.abspath(os.path.join(application_path, "elements"))
 os.environ.setdefault("ELEMENTS_PATH", ELEMENTS_PATH)
 
-IMAGE_CONFIG_PATH = os.getenv(
-    "CC_IMAGES_CONFIG", os.path.join(_cc_images_path, "images.yaml")
-)
+default_images_path = os.path.join(application_path, "config", "images.yaml")
+IMAGE_CONFIG_PATH = os.getenv("CC_IMAGES_CONFIG", default_images_path)
 
-BUILD_PATH = os.path.abspath(os.path.join(_cc_images_path, "..", "build"))
+BUILD_PATH = os.path.abspath(os.path.join(application_path, "build"))
 if not os.path.exists(BUILD_PATH):
     os.mkdir(BUILD_PATH)
 
