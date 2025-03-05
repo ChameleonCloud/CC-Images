@@ -122,6 +122,29 @@ automatically when the image is pushed.
 When images are pushed, a new file called `current` is created in the scope level of the
 container. This file contains the datetime stamp that should be used to pull images.
 
+For example:
+```
+chameleon-images/
+chameleon-images/prod/
+chameleon-images/prod/current
+chameleon-images/prod/20250304-215731
+chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.manifest
+chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.qcow2
+chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.raw
+chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.manifest
+chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.qcow2
+chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.raw
+chameleon-images/prod/20250303-170257
+chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.manifest
+chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.qcow2
+chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.raw
+chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.manifest
+chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.qcow2
+chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.raw
+```
+
+In this case the contents of the `current` file is `20250304-215731` since that is the newer set of images that have been pushed.
+
 ### Authentication
 
 `cc-images` is configured as an OpenStack client
