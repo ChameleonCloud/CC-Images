@@ -4,4 +4,4 @@
 export DIB_GRUB_TIMEOUT=0
 
 # set default cmdline
-# DIB_BOOTLOADER_DEFAULT_CMDLINE="console=tty0 console=ttyS0,115200 pci=realloc=off"
+DIB_BOOTLOADER_DEFAULT_CMDLINE="gfxpayload=text pci=realloc=off"
