@@ -6,8 +6,3 @@ fi
 set -eu
 set -x
 set -o pipefail
-
-# pci=realloc=off is a fix for A100 nodes which fail to load Nvidia drivers
-# if 4 or more GPUs are installed
-DIB_BOOTLOADER_DEFAULT_CMDLINE="${DIB_BOOTLOADER_DEFAULT_CMDLINE} pci=realloc=off"
-
