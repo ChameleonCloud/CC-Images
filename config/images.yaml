@@ -64,7 +64,7 @@ CC-Ubuntu24.04:
     release: noble
     variant: base
 
-CC-Ubuntu24.04-hwe:
+CC-Ubuntu24.04-ROCm:
   arch:
     - amd64
     - arm64

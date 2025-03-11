@@ -1,0 +1,17 @@
+linux-generic-hwe-24.04:
+linux-headers-generic-hwe-24.04:
+linux-modules-extra-6.11.0-19-generic:
+# amdgpu-dkms is broken with ubuntu24.04 as far as I can tell
+# it has issues with the version of the headers from the packages
+# grep: amd/dkms/config/config.h: No such file or directory
+# and when you dig deeper it fails to find a make target in the
+# headers directory that it needs to build dkms
+#amdgpu-dkms:
+rocm-core:
+rocm-smi:
+# uninstall all kernel 6.8 related stuff
+# workaround for linux-image-generic being installed by `ubuntu` element
+# and `linux-generic` being installed by cc-common element
+linux-*-6.8*-generic:
+  phase: post-install.d
+  uninstall: True
