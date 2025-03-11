@@ -3,5 +3,14 @@
 # speed up boot times
 export DIB_GRUB_TIMEOUT=0
 
-# set default cmdline
-# DIB_BOOTLOADER_DEFAULT_CMDLINE="console=tty0 console=ttyS0,115200 pci=realloc=off"
+# DIB_BOOTLOADER_DEFAULT_CMDLINE sets parameters that are appended to the
+# GRUB_CMDLINE_LINUX_DEFAULT values in grub.cfg configuration.
+# defaults to nofb nomodeset gfxpayload=text.
+# - nofb: removed, appears to be a no-op for ~20 years??
+# - nomodeset: removed, causes all sorts of issues with amdgpu,
+#              and can cause excessive on some baremetal servers!
+# - gfxpayload=text: kept; probably ok, tells grub not to leave it at `auto`,
+#                    and only impacts what video drivers load
+# - pci=realloc=off: added needed to handle badness on ubuntu with ubuntu and multi-gpus
+#                    centos distros have it turned off already
+DIB_BOOTLOADER_DEFAULT_CMDLINE="gfxpayload=text pci=realloc=off"
