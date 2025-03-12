@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -x
+set -o pipefail
+
+mkdir -p $TMP_HOOKS_PATH/keyrings
+
+# ROCm GPG key
+wget -qO - https://repo.radeon.com/rocm/rocm.gpg.key | gpg --dearmor > $TMP_HOOKS_PATH/keyrings/rocm.gpg
+
+# AMDGPU GPG key
+#gpg --no-default-keyring --keyring gnupg-ring:/tmp/amdgpu-temp.gpg --keyserver keyserver.ubuntu.com --recv-keys CA8BB4727A47B4D09B4EE8969386B48A1A693C5C
+#gpg --dearmor -o $TMP_HOOKS_PATH/keyrings/amdgpu.gpg /tmp/amdgpu-temp.gpg
+#rm -f /tmp/amdgpu-temp.gpg
