@@ -1,6 +1,5 @@
 linux-generic-hwe-24.04:
 linux-headers-generic-hwe-24.04:
-linux-modules-extra-6.11.0-19-generic:
 # amdgpu-dkms is broken with ubuntu24.04 as far as I can tell
 # it has issues with the version of the headers from the packages
 # grep: amd/dkms/config/config.h: No such file or directory
