@@ -1,5 +1,0 @@
-#!/bin/bash
-
-export DIB_RELEASE=7
-# Yum does not support python3 on CentOS 7, so we can't make python3 default.
-export DIB_DISABLE_DEFAULT_PYTHON3=1
