@@ -219,10 +219,7 @@ elements defined here will be automatically pulled and imported every time `cc-i
 
 ## Known Issues
 
-* CentOS7 images are non-functioning
-    * There is an issue with the `grub` configuration for UEFI which prevents them from booting
-    * There is an issue with autologin for non-UEFI nodes which prevents them from logging in
-      post-boot
+* Currently, CentOS images need to be built on a CentOS host
 * CentOS CUDA images are non-functioning
   * The Nvidia drivers are not loaded by the system
 * The FPGA elements are untested and incomplete
