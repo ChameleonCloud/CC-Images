@@ -101,6 +101,39 @@ these artifacts to implement how they are used beyond that.
 that it will eat up a lot of disk space if many different images are built without clearing the
 cache.
 
+### Building ARM on x86-based Architectures
+
+You can use qemu emulation to build ARM images on x86 systems, however, it is significantly
+slower. If you still wish to do so (or don't have access to an arm system) make sure to
+install the qemu static binaries for arm emulation:
+```
+sudo apt install qemu-user-static binfmt-support
+```
+
+And then configure it:
+```
+sudo update-binfmts --enable qemu-aarch64
+```
+
+After that you should be able to build the arm images using `cc-images.py` specifying
+`arm64` as the architecture.
+
+However, on a system that takes around 5-7 minutes to build an x86 version of the Ubuntu24.04
+image, it took about 2 hours and 5 minutes to build the arm image using qemu emulation:
+```
+INFO:cc_images.build:BUILD CC-Ubuntu24.04-ARM64: Build complete!
+Parent: Waiting on 0 tasks...
+INFO:__main__:Finished in 2:05:38.122256
+```
+
+Therefore, we strongly recommend you build arm images on arm systems rather than rely on
+qemu emulation.
+
+To disable arm binaries and revert back to the native x86 binaries you can run:
+```
+sudo update-binfmts --disable qemu-aarch64
+```
+
 ## Pushing
 
 Push tasks are triggered by the `-p/--push` flag. When a push is triggered, it is queued
