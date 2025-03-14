@@ -1,5 +1,5 @@
 import argparse
-import sys
+import re
 
 from cc_images.config import get_supported_image_names, Architecture
 
@@ -16,6 +16,7 @@ class CCImagesArgs:
         destroy_cache: bool,
         n_tasks: int,
         scope: str,
+        version: str,
         arch: "list[Architecture]",
         images: "list[str]",
     ):
@@ -24,6 +25,7 @@ class CCImagesArgs:
         self.destroy_cache: bool = destroy_cache
         self.n_tasks: int = n_tasks
         self.scope: str = scope
+        self.version: str = version
         self.arch: list[Architecture] = arch
         self.images: set[str] = set(images)
 
@@ -31,6 +33,9 @@ class CCImagesArgs:
             raise ValueError(
                 "cc-images not configured to build or push! Run with -h for context."
             )
+
+        if not re.match(r'^v\d+(-[a-z]+)?$', version):
+            raise ValueError("Version must be in the format vN or vN-suffix (e.g., v1, v1-arm)")
 
 
 def parse_args() -> CCImagesArgs:
@@ -92,6 +97,16 @@ def parse_args() -> CCImagesArgs:
     )
 
     arg_parser.add_argument(
+        "-v",
+        "--version",
+        help="The version for where to push images (date-version). "
+        "v1 is the default.",
+        dest="version",
+        type=str,
+        default="v1",
+    )
+
+    arg_parser.add_argument(
         "-a",
         "--architecture",
         help="Comma-separated list of architectures to build/push. "
@@ -117,6 +132,7 @@ def parse_args() -> CCImagesArgs:
         namespace.destroy_cache,
         namespace.n_tasks,
         namespace.scope,
+        namespace.version,
         namespace.architectures,
         namespace.images,
     )
