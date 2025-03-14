@@ -78,7 +78,7 @@ def run_tasks(cmdline: CCImagesArgs, images_to_run: "list[ChameleonImage]"):
                 tasks.append(
                     process_context.Process(
                         target=do_push,
-                        args=(image, site, will_build, cmdline.scope, semaphore, is_built[image]),
+                        args=(image, site, will_build, cmdline.scope, cmdline.version, semaphore, is_built[image]),
                         name=f"PUSH-{image.name}-{site.name}",
                     )
                 )

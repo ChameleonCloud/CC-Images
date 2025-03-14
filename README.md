@@ -143,7 +143,7 @@ not exist in the cache, the push will wait for its image to be built before exec
 When images are pushed, they are transferred to a container in the object store.
 The container structure in the object store is:
 ```
-<base container name>/<scope>/<datetime>
+<base container name>/<scope>/versions/<date>-<version>
 ```
 
 The base container name is fixed and should be created manually ahead of time. The
@@ -153,30 +153,35 @@ iterations may add support for additional environments. The datetime is generate
 automatically when the image is pushed.
 
 When images are pushed, a new file called `current` is created in the scope level of the
-container. This file contains the datetime stamp that should be used to pull images.
+container. This file contains the latest date-version that should be used for each image.
 
 For example:
 ```
 chameleon-images/
 chameleon-images/prod/
 chameleon-images/prod/current
-chameleon-images/prod/20250304-215731
-chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.manifest
-chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.qcow2
-chameleon-images/prod/20250304-215731/CC-Ubuntu24.04.raw
-chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.manifest
-chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.qcow2
-chameleon-images/prod/20250304-215731/CC-Ubuntu22.04.raw
-chameleon-images/prod/20250303-170257
-chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.manifest
-chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.qcow2
-chameleon-images/prod/20250303-170257/CC-Ubuntu24.04.raw
-chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.manifest
-chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.qcow2
-chameleon-images/prod/20250303-170257/CC-Ubuntu22.04.raw
+chameleon-images/prod/versions/20250304-v2
+chameleon-images/prod/versions/20250304-v2/CC-Ubuntu24.04.manifest
+chameleon-images/prod/versions/20250304-v2/CC-Ubuntu24.04.qcow2
+chameleon-images/prod/versions/20250304-v1
+chameleon-images/prod/versions/20250304-v1/CC-Ubuntu24.04.manifest
+chameleon-images/prod/versions/20250304-v1/CC-Ubuntu24.04.qcow2
+chameleon-images/prod/versions/20250304-v1/CC-Ubuntu22.04.manifest
+chameleon-images/prod/versions/20250304-v1/CC-Ubuntu22.04.qcow2
+chameleon-images/prod/versions/20250303-v1
+chameleon-images/prod/versions/20250303-v1/CC-Ubuntu24.04.manifest
+chameleon-images/prod/versions/20250303-v1/CC-Ubuntu24.04.qcow2
+chameleon-images/prod/versions/20250303-v1/CC-Ubuntu22.04.manifest
+chameleon-images/prod/versions/20250303-v1/CC-Ubuntu22.04.qcow2
 ```
 
-In this case the contents of the `current` file is `20250304-215731` since that is the newer set of images that have been pushed.
+In this case the contents of the `current` file would be:
+```
+{
+  "CC-Ubuntu24.04": "20250304-v2",
+  "CC-Ubuntu22.04": "20250304-v1"
+}
+```
 
 ### Authentication
 
