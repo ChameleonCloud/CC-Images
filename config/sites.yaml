@@ -1,14 +1,8 @@
-# These are the sites where images will be *pushed*. Because of how the
-# image puller tool works, the only sites for now are {CHI,KVM}@TACC
+# The site where images will be *pushed*. Because of how the
+# image puller tool works, the only supported site, for now, is CHI@TACC.
 # ``cloud`` refers to the segment of clouds.yaml which describes how to authenticate to the host
 ---
-#CHI@UC:
-#  is_baremetal: True
-#  cloud: uc
 CHI@TACC:
   is_baremetal: True
   cloud: tacc
   image_container: chameleon-supported-images
-KVM@TACC:
-  is_baremetal: False
-  cloud: kvm
