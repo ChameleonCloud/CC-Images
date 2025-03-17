@@ -147,7 +147,7 @@ The container structure in the object store is:
 ```
 
 The base container name is fixed and should be created manually ahead of time. The
-default is `chameleon-images`. The scope supports different images for production, staging,
+default is `chameleon-supported-images`. The scope supports different images for production, staging,
 and development. The initial implementation should only use `prod` for the scope. Future
 iterations may add support for additional environments. The datetime is generated
 automatically when the image is pushed.
@@ -157,22 +157,22 @@ container. This file contains the latest date-version that should be used for ea
 
 For example:
 ```
-chameleon-images/
-chameleon-images/prod/
-chameleon-images/prod/current
-chameleon-images/prod/versions/20250304-v2
-chameleon-images/prod/versions/20250304-v2/CC-Ubuntu24.04.manifest
-chameleon-images/prod/versions/20250304-v2/CC-Ubuntu24.04.qcow2
-chameleon-images/prod/versions/20250304-v1
-chameleon-images/prod/versions/20250304-v1/CC-Ubuntu24.04.manifest
-chameleon-images/prod/versions/20250304-v1/CC-Ubuntu24.04.qcow2
-chameleon-images/prod/versions/20250304-v1/CC-Ubuntu22.04.manifest
-chameleon-images/prod/versions/20250304-v1/CC-Ubuntu22.04.qcow2
-chameleon-images/prod/versions/20250303-v1
-chameleon-images/prod/versions/20250303-v1/CC-Ubuntu24.04.manifest
-chameleon-images/prod/versions/20250303-v1/CC-Ubuntu24.04.qcow2
-chameleon-images/prod/versions/20250303-v1/CC-Ubuntu22.04.manifest
-chameleon-images/prod/versions/20250303-v1/CC-Ubuntu22.04.qcow2
+chameleon-supported-images/
+chameleon-supported-images/prod/
+chameleon-supported-images/prod/current
+chameleon-supported-images/prod/versions/20250304-v2
+chameleon-supported-images/prod/versions/20250304-v2/CC-Ubuntu24.04.manifest
+chameleon-supported-images/prod/versions/20250304-v2/CC-Ubuntu24.04.qcow2
+chameleon-supported-images/prod/versions/20250304-v1
+chameleon-supported-images/prod/versions/20250304-v1/CC-Ubuntu24.04.manifest
+chameleon-supported-images/prod/versions/20250304-v1/CC-Ubuntu24.04.qcow2
+chameleon-supported-images/prod/versions/20250304-v1/CC-Ubuntu22.04.manifest
+chameleon-supported-images/prod/versions/20250304-v1/CC-Ubuntu22.04.qcow2
+chameleon-supported-images/prod/versions/20250303-v1
+chameleon-supported-images/prod/versions/20250303-v1/CC-Ubuntu24.04.manifest
+chameleon-supported-images/prod/versions/20250303-v1/CC-Ubuntu24.04.qcow2
+chameleon-supported-images/prod/versions/20250303-v1/CC-Ubuntu22.04.manifest
+chameleon-supported-images/prod/versions/20250303-v1/CC-Ubuntu22.04.qcow2
 ```
 
 In this case the contents of the `current` file would be:

@@ -30,7 +30,7 @@ def get_sites() -> "list[ChameleonSite]":
         cloud = site.get("cloud")
         if not cloud:
             raise ValueError("Missing required site attribute cloud")
-        image_container = site.get("image_container", "chameleon-images")
+        image_container = site.get("image_container", "chameleon-supported-images")
         output.append(ChameleonSite(site_name, is_baremetal,
                                     cloud, image_container))
     return output
