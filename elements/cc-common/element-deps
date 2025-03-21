@@ -1,5 +1,5 @@
 block-device-efi
-cc-cloudfuse
+cc-rclone
 cc-snapshot
 cc-firewall
 vm
