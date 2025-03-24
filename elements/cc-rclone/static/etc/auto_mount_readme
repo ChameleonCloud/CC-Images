@@ -1,23 +1,39 @@
 cc-rclone
 ___________________________________________________________________
-The "my_mounting_point" directory under /home/cc is the mounting
-point to the Chameleon object store, so that you can access the
-object store as a file system.
+The "cc_my_mounting_point" directory under /home/cc is the base
+mounting point to the Chameleon object store, so that you can access
+the object store as a file system. Within this directory different
+directories map to containers you have mounted in the object store.
 
 The mount is facilitated by rclone [1].
 
-You can check if the rclone mount is running:
+You can mount the object store by running:
 
-ps -aux | grep rclone
+cc-mount-object-store start your_bucket_name
 
-If the process is not running or needs to be started again, you
-can do so with:
+You can check if the mount is running with:
 
-rclone mount rclone_s3: /home/cc/my_mounting_point --daemon
+cc-mount-object-store status your_bucket_name
+
+And you can terminate the rclone mount with:
+
+cc-mount-object-store stop your_bucket_name
+
+Finally, you can list all running mounts with:
+
+cc-mount-object-store list
+
+If there is a directory that is unmounted, it should have an empty
+file in the directory named THIS_IS_NOT_MOUNTED, for example:
+~/cc_my_mounting_point/your_bucket_name/THIS_IS_NOT_MOUNTED.
+
+If there is no container with the name you provide when you
+start the mount, it will be created by rclone as soon as you copy
+files into the directory.
 
 WARNING:
 
-The use of "my_mounting_point" to sync files between your instance
+The use of "cc_my_mounting_point" to sync files between your instance
 and the object store is a best effort tool. It is the responsibilty
 of the user to verify the files sync'd correctly and are valid.
 

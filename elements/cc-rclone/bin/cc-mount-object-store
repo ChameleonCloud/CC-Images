@@ -1,7 +1,7 @@
 #!/bin/bash
 
 exit_failure() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S'): Failed to create object store mount!" >> my_mounting_point.failure
+  echo "$(date '+%Y-%m-%d %H:%M:%S'): Failed to create object store mount!" >> cc_my_mounting_point.failure
 }
 
 trap 'exit_failure' EXIT
@@ -14,35 +14,38 @@ if [ ! -f /home/cc/openrc ]; then
     cc-read-vendordata "openrc" >  /home/cc/openrc
     sed -i 's/^ *//g' /home/cc/openrc
   else
-    echo "$(date '+%Y-%m-%d %H:%M:%S'): Unable to read OPENRC" >> /home/cc/my_mounting_point.failure
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): Unable to read OPENRC" >> /home/cc/cc_my_mounting_point.failure
     exit 1
   fi
 fi
 
 source /home/cc/openrc
 if [ -z "${OS_STORAGE_URL}" ]; then
-  echo "$(date '+%Y-%m-%d %H:%M:%S'): OS_STORAGE_URL was not set" >> /home/cc/my_mounting_point.failure
+  echo "$(date '+%Y-%m-%d %H:%M:%S'): OS_STORAGE_URL was not set" >> /home/cc/cc_my_mounting_point.failure
   REGION=$(cc-read-vendordata "region")
   if [ "${REGION}" = "KVM@TACC" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S'): KVM@TACC does not have an object store available" >> /home/cc/my_mounting_point.failure
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): KVM@TACC does not have an object store available" >> /home/cc/cc_my_mounting_point.failure
   fi
   exit 1
 fi
 
-mkdir /home/cc/my_mounting_point
-touch /home/cc/my_mounting_point/THIS_IS_NOT_MOUNTED
-mkdir -p /home/cc/.config/rclone/
-
 EC2_STORAGE_ENDPOINT=${OS_STORAGE_URL%/swift*}
-EC2_CREDS="$(openstack ec2 credential create -f json)"
-ACCESS_KEY=$(echo ${EC2_CREDS} | jq -r '.access')
-SECRET_KEY=$(echo ${EC2_CREDS} | jq -r '.secret')
+EC2_CREDS="$(openstack ec2 credential list -f json 2>/dev/null)"
+if [ $? -eq 0 ] && [ ! -z "$output" ]; then
+  ACCESS_KEY=$(echo "$output" | jq -r '.[0].Access')
+  SECRET_KEY=$(echo "$output" | jq -r '.[0].Secret')
+else
+  EC2_CREDS="$(openstack ec2 credential create -f json 2>/dev/null)"
+  ACCESS_KEY=$(echo ${EC2_CREDS} | jq -r '.access')
+  SECRET_KEY=$(echo ${EC2_CREDS} | jq -r '.secret')
+fi
 
 if [ -z "$EC2_STORAGE_ENDPOINT" ] || [ -z "$ACCESS_KEY" ] || [ -z "$SECRET_KEY" ]; then
-  echo "$(date '+%Y-%m-%d %H:%M:%S'): EC2 vars not set" >> /home/cc/my_mounting_point.failure
+  echo "$(date '+%Y-%m-%d %H:%M:%S'): EC2 vars not set" >> /home/cc/cc_my_mounting_point.failure
   exit 1
 fi
 
+mkdir -p /home/cc/.config/rclone/
 cat << EOF > /home/cc/.config/rclone/rclone.conf
 [rclone_s3]
 type = s3
@@ -52,14 +55,9 @@ access_key_id = ${ACCESS_KEY}
 secret_access_key = ${SECRET_KEY}
 EOF
 
-set +e
-rclone mount rclone_s3: /home/cc/my_mounting_point --daemon --allow-non-empty
-RESULT=$?
-if [ $RESULT -eq 0 ]; then
-  sudo mv /etc/auto_mount_readme /home/cc/README
-  sudo chown -R cc:cc /home/cc/README
-else
-  rm -rf /home/cc/my_mounting_point
-  echo "$(date '+%Y-%m-%d %H:%M:%S'): rclone failed to mount" >> /home/cc/my_mounting_point.failure
-  exit 1
-fi
+sudo mv /etc/auto_mount_readme /home/cc/README
+sudo chown -R cc:cc /home/cc/README
+
+sudo mv /etc/cc-mount-object-store /usr/local/bin/cc-mount-object-store
+sudo chown -R cc:cc /usr/local/bin/cc-mount-object-store
+sudo chmod +x /usr/local/bin/cc-mount-object-store
