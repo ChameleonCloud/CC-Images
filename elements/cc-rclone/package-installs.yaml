@@ -1,9 +1,0 @@
----
-# we install rclone via the package manager
-# to get all the dependences, however, we will
-# upgrade it directly from rclone's site to get
-# latest version
-rclone:
-# fuse3 is required by newer versions of rclone
-# so it's not pulled in by the rclone in the repo
-fuse3:

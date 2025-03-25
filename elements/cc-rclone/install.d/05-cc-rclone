@@ -6,5 +6,62 @@ fi
 set -eu
 set -o pipefail
 
-# upgrade rclone
-curl https://rclone.org/install.sh | sudo bash
+OS="unknown"
+ARCH="unknown"
+
+case $(uname -m) in
+  x86_64|amd64) ARCH="amd" ;;
+  aarch64|armv7l|armv8l) ARCH="arm" ;;
+  *) echo "Unsupported architecture"; exit 1 ;;
+esac
+
+if [ -f /etc/debian_version ]; then
+  OS="ubuntu"
+elif [ -f /etc/redhat-release ] || [ -f /etc/centos-release ]; then
+  OS="centos"
+else
+  echo "Unsupported operating system"
+  exit 1
+fi
+
+URL=""
+case "${OS}-${ARCH}" in
+  "ubuntu-amd")
+    [ -z "${RCLONE_AMD_DEB_URL}" ] && { echo "RCLONE_AMD_DEB_URL not set"; exit 1; }
+    URL="${RCLONE_AMD_DEB_URL}"
+    ;;
+  "ubuntu-arm")
+    [ -z "${RCLONE_ARM_DEB_URL}" ] && { echo "RCLONE_ARM_DEB_URL not set"; exit 1; }
+    URL="${RCLONE_ARM_DEB_URL}"
+    ;;
+  "centos-amd")
+    [ -z "${RCLONE_AMD_RPM_URL}" ] && { echo "RCLONE_AMD_RPM_URL not set"; exit 1; }
+    URL="${RCLONE_AMD_RPM_URL}"
+    ;;
+  *)
+    echo "Unsupported OS-architecture combination: ${OS}-${ARCH}"
+    exit 1
+    ;;
+esac
+
+FILENAME=$(basename "${URL}")
+TMP_FILE="/tmp/${FILENAME}"
+
+echo "Downloading ${FILENAME}..."
+if ! curl -sL "${URL}" -o "${TMP_FILE}"; then
+  echo "Failed to download package"
+  exit 1
+fi
+
+echo "Installing ${FILENAME}..."
+case "${OS}" in
+  "ubuntu")
+    sudo dpkg -i "${TMP_FILE}"
+    ;;
+  "centos")
+    sudo rpm -i "${TMP_FILE}"
+    ;;
+esac
+
+rm -f "${TMP_FILE}"
+echo "rclone installation complete!"
