@@ -67,7 +67,7 @@ stop() {
 
   local pid=$(cat "${pid_file}")
   kill "${pid}"
-  fusermount -u "${mount_point}"
+  fusermount -uz "${mount_point}"
   rm "${pid_file}"
   echo "Stopped mount for ${container_name}"
 }
