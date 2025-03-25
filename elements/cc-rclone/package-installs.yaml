@@ -1,0 +1,3 @@
+# required by rclone, and not automatically installed
+# via the rpm package in centos9
+fuse3:
