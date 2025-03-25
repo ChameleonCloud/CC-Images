@@ -9,15 +9,15 @@ The mount is facilitated by rclone [1].
 
 You can mount the object store by running:
 
-cc-mount-object-store start your_bucket_name
+cc-mount-object-store start your_container_name
 
 You can check if the mount is running with:
 
-cc-mount-object-store status your_bucket_name
+cc-mount-object-store status your_container_name
 
 And you can terminate the rclone mount with:
 
-cc-mount-object-store stop your_bucket_name
+cc-mount-object-store stop your_container_name
 
 Finally, you can list all running mounts with:
 
@@ -25,7 +25,7 @@ cc-mount-object-store list
 
 If there is a directory that is unmounted, it should have an empty
 file in the directory named THIS_IS_NOT_MOUNTED, for example:
-~/cc_my_mounting_point/your_bucket_name/THIS_IS_NOT_MOUNTED.
+~/cc_my_mounting_point/your_container_name/THIS_IS_NOT_MOUNTED.
 
 If there is no container with the name you provide when you
 start the mount, it will be created by rclone as soon as you copy
