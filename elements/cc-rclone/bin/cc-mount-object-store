@@ -1,5 +1,11 @@
 #!/bin/bash
 
+REGION=$(cc-read-vendordata "region")
+if [ "${REGION}" = "KVM@TACC" ]; then
+  echo "${REGION} does not support object store mounts!"
+  exit 1
+fi
+
 MOUNT_BASE="$HOME/cc_my_mounting_point"
 RCLONE_REMOTE="rclone_s3"
 LOG_DIR="$HOME/.rclone/logs"
