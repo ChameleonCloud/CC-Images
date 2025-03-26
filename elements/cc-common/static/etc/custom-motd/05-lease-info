@@ -1,5 +1,10 @@
 #!/bin/bash
 
+REGION=$(cc-read-vendordata "region")
+if [ "${REGION}" = "KVM@TACC" ]; then
+  exit 0
+fi
+
 NODE_ID=$(cc-read-vendordata "node")
 BLAZAR_NODE_ID=$(openstack reservation host show ${NODE_ID} -f json | jq -r .id)
 # TODO: fix this: this isn't ideal since it gets everything
