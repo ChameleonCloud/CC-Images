@@ -1,0 +1,7 @@
+#!/bin/bash
+
+REGION=$(cc-read-vendordata "region")
+
+if [ "${REGION}" = "KVM@TACC" ]; then
+  sudo systemctl disable firewalld --now
+fi

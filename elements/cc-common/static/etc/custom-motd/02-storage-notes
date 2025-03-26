@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "DATA MANAGEMENT:"
+
+cat << EOF
+
+WARNING: If your instance is deleted we will be unable to recover your data.
+You must save your data to a location off the instance before the instance
+is terminated.
+
+There are a few options for saivng your data:
+ - Use cc-snapshot to snapshot the image:
+   https://chameleoncloud.readthedocs.io/en/latest/technical/images.html#the-cc-snapshot-utility
+
+ - Mount the object store and copy files to it:
+   https://chameleoncloud.readthedocs.io/en/latest/technical/swift.html#object-store
+
+EOF

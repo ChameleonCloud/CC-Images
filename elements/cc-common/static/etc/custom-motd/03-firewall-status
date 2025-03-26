@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "FIREWALL STATUS:"
+echo
+if systemctl is-active --quiet firewalld; then
+  echo "    firewalld: ENABLED"
+  echo
+  echo "    Documentation for managing firewalld settings:"
+  echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#firewall"
+  echo
+else
+  echo "    firewalld: DISABLED"
+  echo
+  echo "    Security groups are used for this instance:"
+  echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#security-groups"
+  echo
+fi

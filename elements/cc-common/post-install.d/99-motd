@@ -15,3 +15,6 @@ rm -f /etc/update-motd.d/91-contract-ua-esm-status
 rm -f /etc/update-motd.d/91-release-upgrade
 rm -f /etc/update-motd.d/92-unattended-upgrades
 rm -f /etc/update-motd.d/95-hwe-eol
+
+# add our custom messages
+cp /etc/custom-motd/* /etc/update-motd.d/
