@@ -1,17 +1,37 @@
 #!/bin/bash
 
-echo "FIREWALL STATUS"
-echo
-if systemctl is-active --quiet firewalld; then
-  echo "    firewalld: ENABLED"
-  echo
-  echo "    Documentation for managing firewalld settings:"
-  echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#firewall"
-  echo
-else
-  echo "    firewalld: DISABLED"
-  echo
-  echo "    Security groups are used for this instance:"
+REGION=$(cc-read-vendordata "region")
+
+print_security_group_info() {
+  echo "    Security groups are used to secure this instance:"
   echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#security-groups"
-  echo
+}
+
+echo -e "FIREWALL STATUS\n"
+if systemctl is-active --quiet firewalld; then
+  echo -e "    firewalld current status: ENABLED"
+  # there is a potential for a race condition here if the user
+  # signs in before cloudinit finishes with its tasks (that
+  # includes disabling the firewall). we'll give them a bit
+  # more info about the desired state and how they can verify it
+  if [ "${REGION}" = "KVM@TACC" ]; then
+    echo -e "    firewalld target status: DISABLED\n"
+    echo -e "    The firewall should be disabled soon.\n"
+    echo -e "    You can check if the firewall is still active with:"
+    echo -e "    systemctl is-active firewalld\n"
+
+    print_security_group_info
+  fi
+  echo -e "\n    Documentation for managing firewalld settings:"
+  echo -e "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#firewall"
+elif [ "${REGION}" = "KVM@TACC" ]; then
+  echo -e "    firewalld current status: DISABLED\n"
+  print_security_group_info
+else
+  echo -e "WARNING:\n"
+  echo -e "firewalld is not enabled and the region does not use security groups!\n"
+  echo -e "Enable a firewall immediately!\n"
+  echo -e "sudo systemctl start firewalld"
 fi
+
+echo
