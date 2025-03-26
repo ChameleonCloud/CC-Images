@@ -1,3 +1,14 @@
 #!/bin/bash
 
-echo "NODE INFO TODO"
+NODE_ID=$(cc-read-vendordata "node")
+SITE=$(cc-read-vendordata "site")
+CLUSTER=$(cc-read-vendordata "cluster")
+
+cat << EOF
+
+NODE INFORMATION
+
+Find hardware information about this node by running the following command:
+curl https://api.chameleoncloud.org/sites/${SITE}/clusters/${CLUSTER}/nodes/${NODE_ID}/ | jq
+
+EOF
