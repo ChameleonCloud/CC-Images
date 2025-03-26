@@ -1,5 +1,10 @@
 #!/bin/bash
 
+REGION=$(cc-read-vendordata "region")
+if [ "${REGION}" = "KVM@TACC" ]; then
+  exit 0
+fi
+
 NODE_ID=$(cc-read-vendordata "node")
 SITE=$(cc-read-vendordata "site")
 CLUSTER=$(cc-read-vendordata "cluster")
