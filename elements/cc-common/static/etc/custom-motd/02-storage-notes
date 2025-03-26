@@ -1,8 +1,8 @@
 #!/bin/bash
 
-echo "DATA MANAGEMENT:"
-
 cat << EOF
+
+DATA MANAGEMENT
 
 WARNING: If your instance is deleted we will be unable to recover your data.
 You must save your data to a location off the instance before the instance
