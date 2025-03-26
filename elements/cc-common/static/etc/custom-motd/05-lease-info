@@ -1,3 +1,13 @@
 #!/bin/bash
 
-echo "LEASE INFO TODO"
+cat << EOF
+
+LEASE INFORMATION
+
+    Lease ID:
+    Lease start:
+    Lease end:
+
+    Time until lease expires:
+
+EOF
