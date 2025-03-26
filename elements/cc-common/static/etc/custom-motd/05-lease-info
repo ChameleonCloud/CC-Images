@@ -1,13 +1,30 @@
 #!/bin/bash
 
+NODE_ID=$(cc-read-vendordata "node")
+BLAZAR_NODE_ID=$(openstack reservation host show ${NODE_ID} -f json | jq -r .id)
+# TODO: fix this: this isn't ideal since it gets everything
+# but the current client has a bug that means show isn't working
+HOST_INFORMATION=$(openstack reservation host allocation list -f json)
+RESERVATION_INFO=$(echo "${HOST_INFORMATION}" | jq -r ".[] | select(.resource_id == \"${BLAZAR_NODE_ID}\") | .reservations[0]")
+
+LEASE_ID=$(echo "${RESERVATION_INFO}" | jq -r '.lease_id')
+START_DATE=$(echo "${RESERVATION_INFO}" | jq -r '.start_date')
+END_DATE=$(echo "${RESERVATION_INFO}" | jq -r '.end_date')
+
+END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
+NOW_SECONDS=$(date +%s)
+DURATION=$((END_SECONDS - NOW_SECONDS))
+DURATION_DAYS=$((DURATION / 86400))
+DURATION_HOURS=$(( (DURATION % 86400) / 3600 ))
+
 cat << EOF
 
 LEASE INFORMATION
 
-    Lease ID:
-    Lease start:
-    Lease end:
+    Lease ID: ${LEASE_ID}
+    Lease start: ${START_DATE}
+    Lease end: ${END_DATE}
 
-    Time until lease expires:
+    Lease expires in ${DURATION_DAYS} days and ${DURATION_HOURS} hours
 
 EOF

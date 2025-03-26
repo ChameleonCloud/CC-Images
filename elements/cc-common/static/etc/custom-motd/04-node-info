@@ -11,4 +11,8 @@ NODE INFORMATION
     Find hardware information about this node by running the following command:
     curl https://api.chameleoncloud.org/sites/${SITE}/clusters/${CLUSTER}/nodes/${NODE_ID}/ | jq
 
+    Or:
+    source ~/openrc
+    openstack reservation host show ${NODE_ID}
+
 EOF
