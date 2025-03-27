@@ -42,38 +42,16 @@ fi
 RESERVATION_INFO=$(cat "${TMP_OUT}")
 rm -f "${TMP_OUT}" "${TMP_ERR}"
 
-# Unfortunately the json output from `host allocation show <id> -f json` is not valid json. The item returned
-# is a string of 2 json-like objects concactenated together with \n. So if there are multiple reservations,
-# they are not a list, instead they are just these json-like strings on new lines. We need to convert the
-# json-like strings into valid json to make it usable. (TODO: fix blazar instead of this processing)
-
-# For example, blazar returns this for 2 reservations:
-# { "reservations": "{\n \"id\": \"0fd6a453-ec0e-457a-a309-ee384cf8e9c2\",\n \"lease_id\":
-# \"7d525153-c83e-425d-926a-18ffe31b58f7\",\n \"start_date\": \"2025-03-25T14:52:00.000000\",\n
-# \"end_date\": \"2025-04-01T15:01:00.000000\"\n}\n{\n \"id\": \"c496f8b4-b936-4542-a1a3-9f02f4e5d93a\",
-# \n \"lease_id\": \"c7221af4-ccf3-440c-a164-276188716bb8\",\n \"start_date\": \"2025-04-03T18:28:00.000000\",\n
-# \"end_date\": \"2025-04-04T18:37:00.000000\"\n}", "resource_id": "3351" }
-
-# After processing it with the awk command below, the json-like string should now be valid json:
-# { "reservations": [{ "id": "0fd6a453-ec0e-457a-a309-ee384cf8e9c2", "lease_id": "7d525153-c83e-425d-926a-18ffe31b58f7",
-# "start_date": "2025-03-25T14:52:00.000000", "end_date": "2025-04-01T15:01:00.000000"},
-# { "id": "c496f8b4-b936-4542-a1a3-9f02f4e5d93a", "lease_id": "c7221af4-ccf3-440c-a164-276188716bb8",
-# "start_date": "2025-04-03T18:28:00.000000", "end_date": "2025-04-04T18:37:00.000000"}], "resource_id": "3351" }
-
-RESERVATION_INFO_JSON=$(echo "${RESERVATION_INFO}" | awk '{
-    gsub(/"reservations": "/, "\"reservations\": [");
-    gsub(/\\n/, "");
-    gsub(/\\"/, "\"");
-    gsub(/}",/, "}],");
-    gsub(/}"$/, "}]");
-    gsub(/}{/, "},{");
-    print
-}')
+# Unfortunately the json output from `host allocation show <id> -f json` is not valid json we can use directly.
+# The json returned for reservations is valid, but the contents of reservations is simply a string of individual
+# json objects concatenated with new lines instead of a list. We can use jq slurp to
+# combine the individual json entries into a proper list (TODO: fix blazar instead of this processing)
+RESERVATION_INFO_JSON=$(echo $RESERVATION_INFO | jq -r '.reservations' | jq -s '.')
 
 # Find the lease that is current by using a timestamp format that matches the one from blazar
 NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.%N" | cut -c1-23)
 eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
-  .reservations[] |
+  .[] |
   select(.start_date <= $now and .end_date > $now) |
   "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
 ' 2>/dev/null)
