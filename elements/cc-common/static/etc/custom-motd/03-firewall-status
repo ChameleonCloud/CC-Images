@@ -11,12 +11,10 @@ echo -e "\nFIREWALL STATUS\n"
 if systemctl is-active --quiet firewalld; then
   echo -e "    firewalld status: ENABLED"
   # there is a potential for a race condition here if the user
-  # signs in before cloudinit finishes with its tasks (that
-  # includes disabling the firewall). we'll give them a bit
-  # more info about the desired state and how they can verify it
+  # logs in before cloudinit finishes with its tasks (that
+  # includes disabling the firewall).
   if [ "${REGION}" = "KVM@TACC" ]; then
-    echo -e "    firewalld target status: DISABLED\n"
-    echo -e "    The firewall should be disabled soon since ${REGION} uses security groups.\n"
+    echo -e "    \n${REGION} uses security groups. firewalld should be disabled momentarily.\n"
     echo -e "    You can check if the firewall is still active with:"
     echo -e "    systemctl is-active firewalld\n"
     print_security_group_info
