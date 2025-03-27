@@ -6,15 +6,12 @@ if [ "${REGION}" = "KVM@TACC" ]; then
 fi
 
 NODE_ID=$(cc-read-vendordata "node")
-BLAZAR_NODE_ID=$(openstack reservation host show ${NODE_ID} -f json | jq -r .id)
-# TODO: fix this: this isn't ideal since it gets everything
-# but the current client has a bug that means show isn't working
-HOST_INFORMATION=$(openstack reservation host allocation list -f json)
-RESERVATION_INFO=$(echo "${HOST_INFORMATION}" | jq -r ".[] | select(.resource_id == \"${BLAZAR_NODE_ID}\") | .reservations[0]")
+BLAZAR_NODE_ID=$(openstack reservation host show ${NODE_ID} -f json 2>/dev/null | jq -r .id)
+RESERVATION_INFO=$(openstack reservation host allocation show ${BLAZAR_NODE_ID} -f json 2>/dev/null)
 
-LEASE_ID=$(echo "${RESERVATION_INFO}" | jq -r '.lease_id')
-START_DATE=$(echo "${RESERVATION_INFO}" | jq -r '.start_date')
-END_DATE=$(echo "${RESERVATION_INFO}" | jq -r '.end_date')
+LEASE_ID=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .lease_id')
+START_DATE=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .start_date')
+END_DATE=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .end_date')
 
 END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
 NOW_SECONDS=$(date +%s)
