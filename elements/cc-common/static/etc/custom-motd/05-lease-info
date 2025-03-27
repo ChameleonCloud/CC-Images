@@ -76,7 +76,7 @@ eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
   .reservations[] |
   select(.start_date <= $now and .end_date > $now) |
   "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
-')
+' 2>/dev/null)
 
 if [[ -z "${LEASE_ID}" || -z "${START_DATE}" || -z "${END_DATE}" ]]; then
     error_out "Missing expected lease information in response"
