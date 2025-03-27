@@ -9,8 +9,6 @@ set -o pipefail
 # add our custom messages: centos has them in profile.d
 # and they must end with .sh
 if [ -d "/etc/profile.d/" ]; then
-  cp /etc/custom-motd/* /etc/update-motd.d/
-
   for file in/etc/custom-motd/*; do
     filename=$(basename "$file")
     cp "$file" "/etc/profile.d/${filename}.sh"
