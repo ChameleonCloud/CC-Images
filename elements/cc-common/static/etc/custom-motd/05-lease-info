@@ -8,7 +8,7 @@ fi
 set -euo pipefail
 
 error_out() {
-    echo -e "    ERROR: $1\n" >&2
+    echo -e "    ERROR: ${1}\n" >&2
     echo -e "    Unable to gather lease information for this instance\n"
     exit 1
 }
@@ -31,23 +31,54 @@ if [ ! -f /home/cc/openrc ]; then
 fi
 
 source /home/cc/openrc
-if ! openstack reservation host show "${NODE_ID}" -f json >"$TMP_OUT" 2>"$TMP_ERR"; then
-    error_out "Failed to get host info: $(cat "$TMP_ERR")"
+if ! openstack reservation host show "${NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get host info: $(cat "${TMP_ERR}")"
 fi
-BLAZAR_NODE_ID=$(jq -r '.id' <"$TMP_OUT" || error_out "Invalid host JSON response")
+BLAZAR_NODE_ID=$(jq -r '.id' <"${TMP_OUT}" || error_out "Invalid host JSON response")
 
-if ! openstack reservation host allocation show "$BLAZAR_NODE_ID" -f json >"$TMP_OUT" 2>"$TMP_ERR"; then
-    error_out "Failed to get host allocation info: $(cat "$TMP_ERR")"
+if ! openstack reservation host allocation show "${BLAZAR_NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get host allocation info: $(cat "${TMP_ERR}")"
 fi
-RESERVATION_INFO=$(cat "$TMP_OUT")
+RESERVATION_INFO=$(cat "${TMP_OUT}")
+rm -f "${TMP_OUT}" "${TMP_ERR}"
 
-LEASE_ID=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .lease_id' || error_out "Invalid lease data in response")
-START_DATE=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .start_date' || error_out "Missing start date in response")
-END_DATE=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .end_date' || error_out "Missing end date in response")
+# Unfortunately the json output from `host allocation show <id> -f json` is not valid json. The item returned
+# is a string of 2 json-like objects concactenated together with \n. So if there are multiple reservations,
+# they are not a list, instead they are just these json-like strings on new lines. We need to convert the
+# json-like strings into valid json to make it usable. (TODO: fix blazar instead of this processing)
 
-rm -f "$TMP_OUT" "$TMP_ERR"
+# For example, blazar returns this for 2 reservations:
+# { "reservations": "{\n \"id\": \"0fd6a453-ec0e-457a-a309-ee384cf8e9c2\",\n \"lease_id\":
+# \"7d525153-c83e-425d-926a-18ffe31b58f7\",\n \"start_date\": \"2025-03-25T14:52:00.000000\",\n
+# \"end_date\": \"2025-04-01T15:01:00.000000\"\n}\n{\n \"id\": \"c496f8b4-b936-4542-a1a3-9f02f4e5d93a\",
+# \n \"lease_id\": \"c7221af4-ccf3-440c-a164-276188716bb8\",\n \"start_date\": \"2025-04-03T18:28:00.000000\",\n
+# \"end_date\": \"2025-04-04T18:37:00.000000\"\n}", "resource_id": "3351" }
 
-if [[ -z "$LEASE_ID" || -z "$START_DATE" || -z "$END_DATE" ]]; then
+# After processing it with the awk command below, the json-like string should now be valid json:
+# { "reservations": [{ "id": "0fd6a453-ec0e-457a-a309-ee384cf8e9c2", "lease_id": "7d525153-c83e-425d-926a-18ffe31b58f7",
+# "start_date": "2025-03-25T14:52:00.000000", "end_date": "2025-04-01T15:01:00.000000"},
+# { "id": "c496f8b4-b936-4542-a1a3-9f02f4e5d93a", "lease_id": "c7221af4-ccf3-440c-a164-276188716bb8",
+# "start_date": "2025-04-03T18:28:00.000000", "end_date": "2025-04-04T18:37:00.000000"}], "resource_id": "3351" }
+
+RESERVATION_INFO_JSON=$(echo "${RESERVATION_INFO}" | awk '{
+    gsub(/"reservations": "/, "\"reservations\": [");
+    gsub(/\\n/, "");
+    gsub(/\\"/, "\"");
+    gsub(/}",/, "}],");
+    gsub(/}"$/, "}]");
+    gsub(/}{/, "},{");
+    print
+}')
+
+# Find the lease that is current by using a timestamp format that matches the one from blazar
+NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.%N" | cut -c1-23)
+eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
+  .reservations[] |
+  select(.start_date <= $now and .end_date > $now) |
+  "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
+')
+
+if [[ -z "${LEASE_ID}" || -z "${START_DATE}" || -z "${END_DATE}" ]]; then
     error_out "Missing expected lease information in response"
 fi
 
