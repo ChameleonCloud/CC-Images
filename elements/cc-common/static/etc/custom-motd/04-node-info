@@ -10,7 +10,6 @@ SITE=$(cc-read-vendordata "site")
 CLUSTER=$(cc-read-vendordata "cluster")
 
 cat << EOF
-
 NODE INFORMATION
 
     Discover information about this node:

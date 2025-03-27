@@ -1,7 +1,6 @@
 #!/bin/bash
 
 cat << EOF
-
 DATA MANAGEMENT
 
     Data Loss Warning:
