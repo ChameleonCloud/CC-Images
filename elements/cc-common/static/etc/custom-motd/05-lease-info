@@ -20,6 +20,17 @@ TMP_ERR=$(mktemp) || error_out "Failed to create temp file for lease info"
 
 NODE_ID=$(cc-read-vendordata "node")
 
+if [ ! -f /home/cc/openrc ]; then
+  OPENRC=$(cc-read-vendordata "openrc")
+  if [ "${OPENRC}" != "null" ]; then
+    cc-read-vendordata "openrc" >  /home/cc/openrc
+    sed -i 's/^ *//g' /home/cc/openrc
+  else
+    error_out "Unable to read OPENRC"
+  fi
+fi
+
+source /home/cc/openrc
 if ! openstack reservation host show "${NODE_ID}" -f json >"$TMP_OUT" 2>"$TMP_ERR"; then
     error_out "Failed to get host info: $(cat "$TMP_ERR")"
 fi
