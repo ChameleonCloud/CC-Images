@@ -5,13 +5,40 @@ if [ "${REGION}" = "KVM@TACC" ]; then
   exit 0
 fi
 
-NODE_ID=$(cc-read-vendordata "node")
-BLAZAR_NODE_ID=$(openstack reservation host show ${NODE_ID} -f json 2>/dev/null | jq -r .id)
-RESERVATION_INFO=$(openstack reservation host allocation show ${BLAZAR_NODE_ID} -f json 2>/dev/null)
+set -euo pipefail
 
-LEASE_ID=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .lease_id')
-START_DATE=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .start_date')
-END_DATE=$(echo "$RESERVATION_INFO" | jq -r '.reservations | fromjson | .end_date')
+error_out() {
+    echo -e "    ERROR: $1\n" >&2
+    echo -e "    Unable to gather lease information for this instance\n"
+    exit 1
+}
+
+echo "LEASE INFORMATION"
+
+TMP_OUT=$(mktemp) || error_out "Failed to create temp file for lease info"
+TMP_ERR=$(mktemp) || error_out "Failed to create temp file for lease info"
+
+NODE_ID=$(cc-read-vendordata "node")
+
+if ! openstack reservation host show "${NODE_ID}" -f json >"$TMP_OUT" 2>"$TMP_ERR"; then
+    error_out "Failed to get host info: $(cat "$TMP_ERR")"
+fi
+BLAZAR_NODE_ID=$(jq -r '.id' <"$TMP_OUT" || error_out "Invalid host JSON response")
+
+if ! openstack reservation host allocation show "$BLAZAR_NODE_ID" -f json >"$TMP_OUT" 2>"$TMP_ERR"; then
+    error_out "Failed to get host allocation info: $(cat "$TMP_ERR")"
+fi
+RESERVATION_INFO=$(cat "$TMP_OUT")
+
+LEASE_ID=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .lease_id' || error_out "Invalid lease data in response")
+START_DATE=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .start_date' || error_out "Missing start date in response")
+END_DATE=$(echo "$RESERVATION_INFO" | jq -e -r '.reservations | fromjson | .end_date' || error_out "Missing end date in response")
+
+rm -f "$TMP_OUT" "$TMP_ERR"
+
+if [[ -z "$LEASE_ID" || -z "$START_DATE" || -z "$END_DATE" ]]; then
+    error_out "Missing expected lease information in response"
+fi
 
 END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
 NOW_SECONDS=$(date +%s)
@@ -20,8 +47,6 @@ DURATION_DAYS=$((DURATION / 86400))
 DURATION_HOURS=$(( (DURATION % 86400) / 3600 ))
 
 cat << EOF
-
-LEASE INFORMATION
 
     Lease ID: ${LEASE_ID}
     Lease start: ${START_DATE}
