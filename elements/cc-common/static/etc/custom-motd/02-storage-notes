@@ -4,15 +4,18 @@ cat << EOF
 
 DATA MANAGEMENT
 
-    WARNING: If your instance is deleted we will be unable to recover your data.
-    You must save your data to a location off the instance before the instance
-    is terminated.
+    Data Loss Warning:
+
+    If your instance is deleted, all data stored on it will be permanently lost
+    and cannot be recovered. To avoid losing your data, make sure to save it to
+    a separate location outside of the instance before it is terminated.
 
     There are a few options for saivng your data:
+
     - Use cc-snapshot to snapshot the image:
-    https://chameleoncloud.readthedocs.io/en/latest/technical/images.html#the-cc-snapshot-utility
+      https://chameleoncloud.readthedocs.io/en/latest/technical/images.html#the-cc-snapshot-utility
 
     - Mount the object store and copy files to it:
-    https://chameleoncloud.readthedocs.io/en/latest/technical/swift.html#object-store
+      https://chameleoncloud.readthedocs.io/en/latest/technical/swift.html#object-store
 
 EOF
