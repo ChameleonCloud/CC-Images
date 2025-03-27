@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cat << EOF
+
 DATA MANAGEMENT
 
     Data Loss Warning:
@@ -16,5 +17,4 @@ DATA MANAGEMENT
 
     - Mount the object store and copy files to it:
       https://chameleoncloud.readthedocs.io/en/latest/technical/swift.html#object-store
-
 EOF

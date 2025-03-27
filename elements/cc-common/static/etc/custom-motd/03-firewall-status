@@ -7,7 +7,7 @@ print_security_group_info() {
   echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#security-groups"
 }
 
-echo -e "FIREWALL STATUS\n"
+echo -e "\nFIREWALL STATUS\n"
 if systemctl is-active --quiet firewalld; then
   echo -e "    firewalld status: ENABLED"
   # there is a potential for a race condition here if the user
@@ -33,4 +33,3 @@ else
   echo -e "Enable a firewall immediately!\n"
   echo -e "sudo systemctl start firewalld"
 fi
-echo
