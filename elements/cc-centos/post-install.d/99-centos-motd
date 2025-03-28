@@ -12,5 +12,5 @@ if [ -d "/etc/profile.d/" ]; then
   for file in /etc/custom-motd/*; do
     filename=$(basename "$file")
     cp "$file" "/etc/profile.d/${filename}.sh"
-done
+  done
 fi
