@@ -5,8 +5,6 @@ if [ "${REGION}" = "KVM@TACC" ]; then
   exit 0
 fi
 
-set -euo pipefail
-
 error_out() {
     echo -e "    ERROR: ${1}\n" >&2
     echo -e "    Unable to gather lease information for this instance\n"
