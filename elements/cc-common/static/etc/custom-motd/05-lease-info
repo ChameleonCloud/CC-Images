@@ -1,0 +1,74 @@
+#!/bin/bash
+
+REGION=$(cc-read-vendordata "region")
+if [ "${REGION}" = "KVM@TACC" ]; then
+  exit 0
+fi
+
+error_out() {
+    echo -e "    ERROR: ${1}\n" >&2
+    echo -e "    Unable to gather lease information for this instance\n"
+    exit 1
+}
+
+echo -e "\nLEASE INFORMATION"
+
+TMP_OUT=$(mktemp) || error_out "Failed to create temp file for lease info"
+TMP_ERR=$(mktemp) || error_out "Failed to create temp file for lease info"
+
+NODE_ID=$(cc-read-vendordata "node")
+
+if [ ! -f /home/cc/openrc ]; then
+  OPENRC=$(cc-read-vendordata "openrc")
+  if [ "${OPENRC}" != "null" ]; then
+    cc-read-vendordata "openrc" >  /home/cc/openrc
+    sed -i 's/^ *//g' /home/cc/openrc
+  else
+    error_out "Unable to read OPENRC"
+  fi
+fi
+
+source /home/cc/openrc
+if ! openstack reservation host show "${NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get host info: $(cat "${TMP_ERR}")"
+fi
+BLAZAR_NODE_ID=$(jq -r '.id' <"${TMP_OUT}" || error_out "Invalid host JSON response")
+
+if ! openstack reservation host allocation show "${BLAZAR_NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get host allocation info: $(cat "${TMP_ERR}")"
+fi
+RESERVATION_INFO=$(cat "${TMP_OUT}")
+rm -f "${TMP_OUT}" "${TMP_ERR}"
+
+# Unfortunately the json output from `host allocation show <id> -f json` is not valid json we can use directly.
+# The json returned for reservations is valid, but the contents of reservations is simply a string of individual
+# json objects concatenated with new lines instead of a list. We can use jq slurp to
+# combine the individual json entries into a proper list (TODO: fix blazar instead of this processing)
+RESERVATION_INFO_JSON=$(echo $RESERVATION_INFO | jq -r '.reservations' | jq -s '.')
+
+# Find the lease that is current by using a timestamp format that matches the one from blazar
+NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.%N" | cut -c1-23)
+eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
+  .[] |
+  select(.start_date <= $now and .end_date > $now) |
+  "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
+' 2>/dev/null)
+
+if [[ -z "${LEASE_ID}" || -z "${START_DATE}" || -z "${END_DATE}" ]]; then
+    error_out "Missing expected lease information in response"
+fi
+
+END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
+NOW_SECONDS=$(date +%s)
+DURATION=$((END_SECONDS - NOW_SECONDS))
+DURATION_DAYS=$((DURATION / 86400))
+DURATION_HOURS=$(( (DURATION % 86400) / 3600 ))
+
+cat << EOF
+
+    Lease ID: ${LEASE_ID}
+    Lease start: ${START_DATE}
+    Lease end: ${END_DATE}
+
+    Lease expires in ${DURATION_DAYS} days and ${DURATION_HOURS} hours
+EOF
