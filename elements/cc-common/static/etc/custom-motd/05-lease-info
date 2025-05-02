@@ -1,74 +1,127 @@
 #!/bin/bash
 
 REGION=$(cc-read-vendordata "region")
-if [ "${REGION}" = "KVM@TACC" ]; then
+[ "${REGION}" = "KVM@TACC" ] && exit 0
+
+export NODE_ID=$(cc-read-vendordata "node")
+
+# 1-day lease cache TTL
+MAX_CACHE_AGE=86400
+
+# 10s lease generation timeout
+TIMEOUT_SECONDS=10
+
+CACHE_FILE="/tmp/cc_lease_info_${NODE_ID}.txt"
+LOCK_FILE="/tmp/cc_lease_info_${NODE_ID}.lock"
+
+# Lock so only one writer / login generates the file. Any concurrent
+# logins will not generate this info, or show it, if another login
+# is in the process of generating it.
+exec {LOCK_FD}> "${LOCK_FILE}"
+if ! flock -n "${LOCK_FD}"; then
   exit 0
 fi
 
-error_out() {
-    echo -e "    ERROR: ${1}\n" >&2
-    echo -e "    Unable to gather lease information for this instance\n"
-    exit 1
-}
-
 echo -e "\nLEASE INFORMATION"
 
-TMP_OUT=$(mktemp) || error_out "Failed to create temp file for lease info"
-TMP_ERR=$(mktemp) || error_out "Failed to create temp file for lease info"
-
-NODE_ID=$(cc-read-vendordata "node")
-
-if [ ! -f /home/cc/openrc ]; then
-  OPENRC=$(cc-read-vendordata "openrc")
-  if [ "${OPENRC}" != "null" ]; then
-    cc-read-vendordata "openrc" >  /home/cc/openrc
-    sed -i 's/^ *//g' /home/cc/openrc
-  else
-    error_out "Unable to read OPENRC"
+# if lease cache is fresh, just print it
+if [ -f "${CACHE_FILE}" ]; then
+  age=$(( $(date +%s) - $(stat -c %Y "${CACHE_FILE}") ))
+  if [ "${age}" -lt "${MAX_CACHE_AGE}" ]; then
+    cat "${CACHE_FILE}"
+    exit 0
   fi
 fi
 
-source /home/cc/openrc
-if ! openstack reservation host show "${NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
-    error_out "Failed to get host info: $(cat "${TMP_ERR}")"
-fi
-BLAZAR_NODE_ID=$(jq -r '.id' <"${TMP_OUT}" || error_out "Invalid host JSON response")
+error_out() {
+    rm -f "${CACHE_FILE}" || true
+    echo -e "\n    ERROR: ${1}" >&2
+    exit 1
+}
 
-if ! openstack reservation host allocation show "${BLAZAR_NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
-    error_out "Failed to get host allocation info: $(cat "${TMP_ERR}")"
-fi
-RESERVATION_INFO=$(cat "${TMP_OUT}")
-rm -f "${TMP_OUT}" "${TMP_ERR}"
+generate_lease_info() {
+  if [ ! -f /home/cc/openrc ]; then
+    OPENRC=$(cc-read-vendordata "openrc")
+    [ "${OPENRC}" = "null" ] && error_out "Unable to read openrc from vendordata"
+    cc-read-vendordata "openrc" > /home/cc/openrc
+    sed -i 's/^ *//g' /home/cc/openrc
+  else
+    # if openrc is present, regenerate as it may be stale
+    cc-generate-openrc
+  fi
 
-# Unfortunately the json output from `host allocation show <id> -f json` is not valid json we can use directly.
-# The json returned for reservations is valid, but the contents of reservations is simply a string of individual
-# json objects concatenated with new lines instead of a list. We can use jq slurp to
-# combine the individual json entries into a proper list (TODO: fix blazar instead of this processing)
-RESERVATION_INFO_JSON=$(echo $RESERVATION_INFO | jq -r '.reservations' | jq -s '.')
+  # if for some reason this failed and we don't have an openrc, exit
+  if [ ! -f /home/cc/openrc ]; then
+    error_out "Unable to generate and read /home/cc/openrc"
+  fi
 
-# Find the lease that is current by using a timestamp format that matches the one from blazar
-NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.%N" | cut -c1-23)
-eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
-  .[] |
-  select(.start_date <= $now and .end_date > $now) |
-  "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
-' 2>/dev/null)
+  source /home/cc/openrc
 
-if [[ -z "${LEASE_ID}" || -z "${START_DATE}" || -z "${END_DATE}" ]]; then
-    error_out "Missing expected lease information in response"
-fi
+  TMP_OUT=$(mktemp) || error_out "mktemp failed"
+  TMP_ERR=$(mktemp) || error_out "mktemp failed"
+  if ! openstack reservation host show "${NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get host info: $(<"${TMP_ERR}")"
+  fi
+  BLAZAR_NODE_ID=$(jq -r '.id' <"${TMP_OUT}" || error_out "Invalid reservation host JSON")
 
-END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
-NOW_SECONDS=$(date +%s)
-DURATION=$((END_SECONDS - NOW_SECONDS))
-DURATION_DAYS=$((DURATION / 86400))
-DURATION_HOURS=$(( (DURATION % 86400) / 3600 ))
+  if ! openstack reservation host allocation show "${BLAZAR_NODE_ID}" -f json >"${TMP_OUT}" 2>"${TMP_ERR}"; then
+    error_out "Failed to get allocation info: $(<"${TMP_ERR}")"
+  fi
+  RESERVATIONS_RAW=$(jq -r '.reservations' <"${TMP_OUT}")
+  rm -f "${TMP_OUT}" "${TMP_ERR}"
 
-cat << EOF
+  # Unfortunately the json output from `host allocation show <id> -f json` is not valid json we can use directly.
+  # The json returned for reservations is valid, but the contents of reservations is simply a string of individual
+  # json objects concatenated with new lines instead of a list. We can use jq slurp to
+  # combine the individual json entries into a proper list (TODO: fix blazar instead of this processing)
+  RESERVATION_INFO_JSON=$(echo "${RESERVATIONS_RAW}" | jq -s '.')
 
-    Lease ID: ${LEASE_ID}
+  # Find the lease that is current by using a timestamp format that matches the one from blazar
+  NOW=$(date -u +"%Y-%m-%dT%H:%M:%S.%N" | cut -c1-23)
+  eval $(echo "${RESERVATION_INFO_JSON}" | jq -r --arg now "${NOW}" '
+    .[] |
+    select(.start_date <= $now and .end_date > $now) |
+    "export LEASE_ID=\(.lease_id); export START_DATE=\(.start_date); export END_DATE=\(.end_date)"
+  ' 2>/dev/null)
+
+  [ -z "${LEASE_ID}" ] && error_out "Missing lease information"
+
+  END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
+  NOW_SECONDS=$(date +%s)
+  DURATION=$(( END_SECONDS - NOW_SECONDS ))
+  DAYS_LEFT=$(( (DURATION + 86399) / 86400 ))  # round up to next day
+
+  cat <<EOF
+
+    Lease ID:    ${LEASE_ID}
     Lease start: ${START_DATE}
-    Lease end: ${END_DATE}
+    Lease end:   ${END_DATE}
 
-    Lease expires in ${DURATION_DAYS} days and ${DURATION_HOURS} hours
 EOF
+
+  if [[ "${DAYS_LEFT}" =~ ^[0-9]+$ ]]; then
+    if [ "${DAYS_LEFT}" -le 1 ]; then
+      echo "    WARNING: Lease expires today! Save your work or renew your lease immediately!"
+    else
+      echo "    Lease expires in ${DAYS_LEFT} days."
+    fi
+  fi
+}
+
+# the lease info cache wasn't fresh, we need to generate it (under timeout), cache if successful
+if ! TMPFILE=$(mktemp); then
+  error_out "mktemp for cache generation failed"
+fi
+
+export -f error_out
+export -f generate_lease_info
+if timeout "${TIMEOUT_SECONDS}s" bash -c 'generate_lease_info' >"${TMPFILE}" 2>&1; then
+  mv "${TMPFILE}" "${CACHE_FILE}"
+  cat "${CACHE_FILE}"
+else
+  cat "${TMPFILE}"
+  rm -f "${TMPFILE}" || true
+  echo -e "\n    Unable to gather lease information for this instance\n"
+fi
+
+exit 0
