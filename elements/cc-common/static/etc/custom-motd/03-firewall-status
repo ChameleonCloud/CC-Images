@@ -1,33 +1,15 @@
 #!/bin/bash
 
-REGION=$(cc-read-vendordata "region")
+cat << EOF
 
-print_security_group_info() {
-  echo "    Security groups are used to secure this instance:"
-  echo "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#security-groups"
-}
+FIREWALL STATUS
 
-echo -e "\nFIREWALL STATUS\n"
-if systemctl is-active --quiet firewalld; then
-  echo -e "    firewalld status: ENABLED"
-  # there is a potential for a race condition here if the user
-  # logs in before cloudinit finishes with its tasks (that
-  # includes disabling the firewall).
-  if [ "${REGION}" = "KVM@TACC" ]; then
-    echo -e "    \n${REGION} uses security groups. firewalld should be disabled momentarily.\n"
-    echo -e "    You can check if the firewall is still active with:"
-    echo -e "    systemctl is-active firewalld\n"
-    print_security_group_info
-  else
-    echo -e "\n    Documentation for managing firewalld settings:"
-    echo -e "    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#firewall"
-  fi
-elif [ "${REGION}" = "KVM@TACC" ]; then
-  echo -e "    firewalld status: DISABLED\n"
-  print_security_group_info
-else
-  echo -e "WARNING:\n"
-  echo -e "firewalld is not enabled and the region does not use security groups!\n"
-  echo -e "Enable a firewall immediately!\n"
-  echo -e "sudo systemctl start firewalld"
-fi
+    You can run the following command to check the status of the firewall:
+    systemctl is-active firewalld
+
+    Bare metal instances use firewalld to manage the firewall:
+    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#firewall
+
+    Instances on KVM should have firewalld disabled and use security groups instead:
+    https://chameleoncloud.readthedocs.io/en/latest/technical/networks/networks_basic.html#security-groups
+EOF
