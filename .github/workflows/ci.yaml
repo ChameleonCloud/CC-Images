@@ -1,0 +1,52 @@
+on:
+  pull_request:
+
+jobs:
+  dib-lint:
+    name: Run dib-lint
+    runs-on: ubuntu-latest
+
+    env:
+      ELEMENTS_DIR: elements
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Create & activate venv, install dib-lint
+        shell: bash
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install diskimage-builder
+
+      - name: Add dummy README.rst where missing
+        shell: bash
+        run: |
+          for d in elements/*; do
+            if [[ -d "$d" && ! -f "$d/README.rst" ]]; then
+              echo "Empty README for dib-lint" > "$d/README.rst"
+            fi
+          done
+
+      - name: Run dib-lint
+        shell: bash
+        run: |
+          source .venv/bin/activate
+          dib-lint
+
+      # (Optional) clean up dummy READMEs, not strictly needed since the runner workspace is ephemeral
+      # - name: Remove dummy README.rst
+      #   shell: bash
+      #   run: |
+      #     for d in elements/*; do
+      #       [[ -f "$d/README.rst" && $(git ls-files --error-unmatch "$d/README.rst" 2>/dev/null) == "" ]] \
+      #         && rm "$d/README.rst"
+      #     done

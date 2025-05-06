@@ -1,7 +1,4 @@
-#!/bin/bash
-
 # see https://github.com/openstack/diskimage-builder/tree/master/diskimage_builder/elements/bootloader
-
 
 # DIB_GRUB_TIMEOUT sets the grub menu timeout. It defaults to 5 seconds. Set this to 0 (no timeout) for fast boot times.
 export DIB_GRUB_TIMEOUT=0

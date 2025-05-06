@@ -1,11 +1,13 @@
 #!/bin/bash
 
 if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
-  set -x
+    set -x
 fi
+set -eu
+set -x
+set -o pipefail
 set -o nounset
 set -o errexit
-set -o pipefail
 
 QUARTUS_ROOTDIR=/opt/intelFPGA_pro/"${DIB_QUARTUS_VERSION}"
 QUARTUS_RUNFILE_NAME="QuartusProProgrammerSetup-${DIB_QUARTUS_VERSION}-linux.run"
@@ -39,4 +41,3 @@ echo "/etc/profile.d/quartus.sh" >> /etc/rc.local
 
 # Ensure that /etc/rc.local is executable
 chmod +x /etc/rc.local
-

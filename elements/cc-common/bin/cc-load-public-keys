@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
 SSH_KEYPAIRS=$(cc-read-vendordata "ssh_keypairs" | tr -d "\n")
 KEYPAIRS=$(python3 -c "import json; print('\n'.join(obj['keypair']['public_key'] for obj in json.loads('$SSH_KEYPAIRS', strict=False)))")
 

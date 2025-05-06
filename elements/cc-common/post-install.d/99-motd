@@ -18,5 +18,5 @@ rm -f /etc/update-motd.d/95-hwe-eol
 
 # add our custom messages
 if [ -d "/etc/update-motd.d/" ]; then
-  cp /etc/custom-motd/* /etc/update-motd.d/
+    cp /etc/custom-motd/* /etc/update-motd.d/
 fi

@@ -14,11 +14,11 @@ ${YUM} install -y "https://yum.puppet.com/puppet-release-el-${upstream_version}.
 # Extra Packages for Enterprise Linux repository
 ${YUM} install -y "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${upstream_version}.noarch.rpm"
 if [[ "${upstream_version}" -ge 9 ]]; then
-  powertools_repo=crb
+    powertools_repo=crb
 else
-  powertools_repo=powertools
+    powertools_repo=powertools
 fi
 
 if [[ "${upstream_version}" -ge 8 ]]; then
-  ${YUM} config-manager --set-enabled "${powertools_repo}"
+    ${YUM} config-manager --set-enabled "${powertools_repo}"
 fi

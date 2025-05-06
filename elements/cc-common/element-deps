@@ -1,9 +1,9 @@
 block-device-efi
+cc-firewall
+cc-manifest
 cc-rclone
 cc-snapshot
-cc-firewall
-vm
-install-static
-install-bin
 cc-timesync
-cc-manifest
+install-bin
+install-static
+vm
