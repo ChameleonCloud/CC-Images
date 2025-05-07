@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
 cat << EOF
 
 GETTING HELP

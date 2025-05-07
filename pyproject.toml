@@ -13,5 +13,10 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+dev = [
+    "diskimage-builder>3.29.0"
+]
+
 [tool.setuptools]
 packages = ["cc_images"]

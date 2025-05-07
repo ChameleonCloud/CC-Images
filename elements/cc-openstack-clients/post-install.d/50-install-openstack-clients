@@ -6,7 +6,6 @@ fi
 set -eu
 set -o pipefail
 
-
 TOOLKIT_REQUIREMENTS_URL="https://raw.githubusercontent.com/ChameleonCloud/cc-toolkit/main/requirements.txt"
 
 VENV_PATH_BASE=/opt/chameleon

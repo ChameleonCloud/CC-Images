@@ -1,5 +1,3 @@
-#!/bin/bash
-
 export RCLONE_V="v1.69.1"
 export RCLONE_URL_BASE="https://github.com/rclone/rclone/releases/download/${RCLONE_V}"
 export RCLONE_AMD_DEB_URL="${RCLONE_URL_BASE}/rclone-${RCLONE_V}-linux-amd64.deb"

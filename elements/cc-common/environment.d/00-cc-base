@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # speed up boot times
 export DIB_GRUB_TIMEOUT=0
 

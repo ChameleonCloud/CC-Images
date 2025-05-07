@@ -1,4 +1,2 @@
-#!/bin/bash
-
 export DIB_RELEASE=noble
 export DIB_DISTRO_VERSION=24.04

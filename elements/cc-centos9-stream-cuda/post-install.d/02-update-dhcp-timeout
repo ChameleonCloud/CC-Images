@@ -8,7 +8,7 @@ set -o pipefail
 
 # Change the DHCP timeout to a 30 seconds value.
 if [[ -f "/etc/dhcp/dhclient.conf" ]]; then
-  sed -i "s/timeout.*/timeout 30;/g" /etc/dhcp/dhclient.conf
+    sed -i "s/timeout.*/timeout 30;/g" /etc/dhcp/dhclient.conf
 else
-  echo "timeout 300;" > /etc/dhcp/dhclient.d/cc-timeout.conf
+    echo "timeout 300;" > /etc/dhcp/dhclient.d/cc-timeout.conf
 fi

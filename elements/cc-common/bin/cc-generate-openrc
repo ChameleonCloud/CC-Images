@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
 OPENRC=$(cc-read-vendordata "openrc")
 
 if [ "${OPENRC}" != "null" ]; then
-  cc-read-vendordata "openrc" >  /home/cc/openrc
-  sed -i 's/^ *//g' /home/cc/openrc
+    cc-read-vendordata "openrc" > /home/cc/openrc
+    sed -i 's/^ *//g' /home/cc/openrc
 fi

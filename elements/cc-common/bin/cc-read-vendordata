@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
 PARAM=$1
 
 OPENSTACK_VENDOR_DATA_2='http://169.254.169.254/openstack/latest/vendor_data2.json'
