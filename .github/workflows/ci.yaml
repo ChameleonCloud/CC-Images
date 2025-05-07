@@ -19,13 +19,10 @@ jobs:
           python-version: '3.x'
           cache: 'pip'
 
-      - name: Create & activate venv, install dib-lint
-        shell: bash
+      - name: Install dev dependencies
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
           pip install --upgrade pip
-          pip install diskimage-builder
+          pip install .[dev]
 
       - name: Add dummy README.rst where missing
         shell: bash
@@ -39,7 +36,6 @@ jobs:
       - name: Run dib-lint
         shell: bash
         run: |
-          source .venv/bin/activate
           dib-lint
 
       # (Optional) clean up dummy READMEs, not strictly needed since the runner workspace is ephemeral
