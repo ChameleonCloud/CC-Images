@@ -1,0 +1,10 @@
+checks:
+  usr/local/bin:
+    - cc-generate-openrc
+    - cc-load-public-keys
+    - cc-mount-object-store
+    - cc-read-vendordata
+  usr/bin:
+    - cloud-init
+    - cc-snapshot
+    - rclone
