@@ -1,0 +1,41 @@
+# Run weekly on main, Sundays at 23:00 UTC (6 pm CDT)
+on:
+  pull_request:
+  #schedule:
+  #  - cron: '0 23 * * 0'
+  #push:
+  #  branches:
+  #    - main
+name: Inspect qcow2 Images
+
+env:
+  STAGING_CONTAINER_URL: ${{ secrets.STAGING_CONTAINER_URL }}
+  # specify the images to inspect (space-separated)
+  IMAGES: CC-Ubuntu24.04
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-utils libguestfs-tools bindfs
+
+    - name: Install cc-images-inspect
+      run: |
+        pip install --upgrade pip
+        pip install .
+
+    - name: Run inspection tool
+      run: |
+        cc-images-inspect url --url "$STAGING_CONTAINER_URL" --images $IMAGES
