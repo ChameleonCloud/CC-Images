@@ -136,6 +136,10 @@ sudo update-binfmts --disable qemu-aarch64
 
 ## Pushing
 
+NOTE: Before pushing images to a container for staging or production we *HIGHLY* recommend running
+the [cc-images-inspect](#cc-images-inspect) tool on the images first. Assuming all of the
+checks pass, you can push the images.
+
 Push tasks are triggered by the `-p/--push` flag. When a push is triggered, it is queued
 asynchronously just like builds. If a push is done alongside a build, or the requested image does
 not exist in the cache, the push will wait for its image to be built before executing.
@@ -229,3 +233,68 @@ elements defined here will be automatically pulled and imported every time `cc-i
   * The Nvidia drivers are not loaded by the system
 * The FPGA elements are untested and incomplete
   * Work on these will continue on more-modern stable operating system then CentOS7
+
+## cc-images-inspect
+
+A CLI for validating qcow2 images against configurable checks and the DIB manifest.
+
+### Configuration
+
+The cc-images-inspect tool is configured via a YAML file, typically named
+`config/inspect.yaml`. This file defines a set of required files or executables that must be
+present in specific locations within the mounted image filesystem.
+
+Each key under checks is a relative filesystem path (e.g., usr/local/bin), from the root /.
+The value should be a list of required executables in that directory.
+
+Any missing executable in any image causes the image to be marked as failed.
+
+### dib-manifest verification
+
+If the script is running on images built locally it will compare the dib-manifest file of
+the image with the contents of the image. The manifest file is expected to be in the following
+location relative to the location of the image:
+```
+{image_name}.qcow2
+{image_name}.d/dib-manifests/dib-manifest-dpkg-{image_name}
+```
+
+If the inspection is not run on local builds of an image, or the manifest file cannot be
+found, it will print a note that manifest checking will be skipped.
+
+*NOTE:* Checking the manifest against installed packages is not supported for CentOS images.
+
+### Installation
+
+Additional Ubuntu system packages for cc-images-inspect:
+```bash
+apt-get install libguestfs-tools bindfs
+```
+
+On CentOS you'll need the same packages:
+```bash
+dnf install libguestfs-tools bindfs
+```
+
+```bash
+pip install .
+```
+
+### Usage
+
+Inspect local qcow2 files:
+```bash
+cc-images-inspect local --paths path/to/image1.qcow2 path/to/image2.qcow2
+```
+
+Inspect specific remote images:
+```bash
+cc-images-inspect url \
+  --url https://<your-bucket>/prod \
+  --images CC-Ubuntu22.04 CC-CentOS9-Stream
+```
+
+Inspect all remote images:
+```bash
+cc-images-inspect url --url https://<your-bucket>/prod
+```
