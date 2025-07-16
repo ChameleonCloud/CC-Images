@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
+URL="http://169.254.169.254/openstack/latest/vendor_data2.json"
+CACHE_FILE="/var/cache/vendordata2.json"
+
+for i in {1..10}; do
+    if json=$(curl -s --connect-timeout 5 "$URL"); then
+        node=$(echo "$json" | jq -r '.chameleon.node // empty')
+        region=$(echo "$json" | jq -r '.chameleon.region // empty')
+        lease_id=$(echo "$json" | jq -r '.chameleon.lease_id // empty')
+        lease_start=$(echo "$json" | jq -r '.chameleon.lease_start // empty')
+        lease_end=$(echo "$json" | jq -r '.chameleon.lease_end // empty')
+
+        {
+            echo "{"
+            echo "  \"chameleon\": {"
+            echo "    \"node\": \"$node\","
+            echo "    \"region\": \"$region\","
+            echo "    \"lease_id\": \"$lease_id\","
+            echo "    \"lease_start\": \"$lease_start\","
+            echo "    \"lease_end\": \"$lease_end\""
+            echo "  }"
+            echo "}"
+        } > "$CACHE_FILE"
+
+        chmod 0644 "$CACHE_FILE"
+        exit 0
+    fi
+    sleep 1
+done
+
+echo "{}" > "$CACHE_FILE"
+chmod 0644 "$CACHE_FILE"

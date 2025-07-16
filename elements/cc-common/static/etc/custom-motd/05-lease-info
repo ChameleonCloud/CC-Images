@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
+read_vendordata() {
+    local key="$1"
+    local default="${2:-}"
+    local vendordata_file="/var/cache/vendordata2.json"
+    if [ ! -f "$vendordata_file" ]; then
+        echo "$default"
+        return
+    fi
+    local value
+    value=$(jq -r --arg key "$key" '.chameleon[$key] // empty' "$vendordata_file")
+
+    if [ -n "$value" ]; then
+        echo "$value"
+    else
+        echo "$default"
+        return
+    fi
+}
+
+echo -e "\nLEASE INFORMATION"
+
+LEASE_ID=$(read_vendordata "lease_id")
+START_DATE=$(read_vendordata "lease_start")
+END_DATE=$(read_vendordata "lease_end")
+
+if [ -z "$LEASE_ID" ] || [ -z "$START_DATE" ] || [ -z "$END_DATE" ]; then
+    echo -e "\n    Lease information is not available."
+    exit 0
+fi
+
+END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
+NOW_SECONDS=$(date +%s)
+DURATION=$((END_SECONDS - NOW_SECONDS))
+DURATION_DAYS=$((DURATION / 86400))
+DURATION_HOURS=$(( (DURATION % 86400) / 3600 ))
+
+cat << EOF
+
+    Lease ID: ${LEASE_ID}
+    Lease start: ${START_DATE}
+    Lease end: ${END_DATE}
+
+    Lease expires in ${DURATION_DAYS} days and ${DURATION_HOURS} hours
+EOF
