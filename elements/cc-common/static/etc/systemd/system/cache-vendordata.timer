@@ -1,0 +1,10 @@
+[Unit]
+Description=Run vendordata fetch every hour
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

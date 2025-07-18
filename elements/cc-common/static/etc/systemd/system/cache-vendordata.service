@@ -1,0 +1,8 @@
+[Unit]
+Description=Fetch and cache vendordata
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cc-update-vendordata-cache

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
+REGION=$(jq -r '.chameleon.region // empty' "/var/cache/vendordata2.json")
+if [ "${REGION}" = "KVM@TACC" ]; then
+    exit 0
+fi
+
+NODE_ID=$(jq -r '.chameleon.node // empty' "/var/cache/vendordata2.json")
+
+echo -e "\nNODE INFORMATION"
+
+if [ -z "$NODE_ID" ]; then
+    echo -e "\n    Node information is not available."
+    exit 0
+fi
+
+cat << EOF
+
+    Discover information about this node:
+
+    source ~/openrc
+    openstack reservation host show ${NODE_ID}
+EOF
