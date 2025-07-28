@@ -4,7 +4,11 @@
 
 REGION=$(jq -r '.chameleon.region // empty' "/var/cache/vendordata2.json")
 if [ "${REGION}" = "KVM@TACC" ]; then
-    exit 0
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        exit 0
+    else
+        return 0
+    fi
 fi
 
 NODE_ID=$(jq -r '.chameleon.node // empty' "/var/cache/vendordata2.json")
@@ -13,7 +17,11 @@ echo -e "\nNODE INFORMATION"
 
 if [ -z "$NODE_ID" ]; then
     echo -e "\n    Node information is not available."
-    exit 0
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        exit 0
+    else
+        return 0
+    fi
 fi
 
 cat << EOF
