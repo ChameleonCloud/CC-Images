@@ -1,0 +1,82 @@
+---
+centos8-stream:
+  arch: amd64
+  elements:
+    - vm
+    - block-device-efi
+    - centos
+  envs:
+    DIB_RELEASE: 8-stream
+centos9-stream:
+  arch: amd64
+  elements:
+    - vm
+    - block-device-efi
+    - centos
+  envs:
+    DIB_RELEASE: 9-stream
+
+x-rocky-elements: &rocky-elements
+  - vm
+  - block-device-efi
+  - rocky-container
+rocky8:
+  arch: amd64
+  elements: *rocky-elements
+  envs:
+    DIB_RELEASE: "8"
+    DIB_CONTAINERFILE_RUNTIME_ROOT: "1"
+rocky9: &rocky9
+  arch: amd64
+  elements: *rocky-elements
+  envs:
+    DIB_RELEASE: "9"
+    DIB_CONTAINERFILE_RUNTIME_ROOT: "1"
+
+### Currently doesn't build
+# cc-rocky-9:
+#   <<: *rocky9
+#   extra_elements:
+#     - cc-common
+
+### just a shortcut, this could be expanded for more verbosity
+x-ubuntu-elements: &ubuntu-elements
+  - vm
+  - block-device-efi
+  - ubuntu
+x-ubuntu-base: &ubuntu-base
+  arch: amd64
+  elements: *ubuntu-elements
+ubuntu18.04:
+  <<: *ubuntu-base
+  envs:
+    DIB_RELEASE: "bionic"
+    DIB_DISTRO_VERSION: "18.04"
+ubuntu20.04: &ubuntu-focal
+  <<: *ubuntu-base
+  envs:
+    DIB_RELEASE: "focal"
+    DIB_DISTRO_VERSION: "20.04"
+ubuntu22.04: &ubuntu-jammy
+  <<: *ubuntu-base
+  envs:
+    DIB_RELEASE: "jammy"
+    DIB_DISTRO_VERSION: "22.04"
+cc-ubuntu20.04:
+  <<: *ubuntu-focal
+  extra_elements:
+    - cc-common
+cc-ubuntu22.04:
+  <<: *ubuntu-jammy
+  extra_elements:
+    - cc-common
+cc-ubuntu20.04-cuda:
+  <<: *ubuntu-focal
+  extra_elements:
+    - cc-common
+    - cc-ubuntu-cuda
+cc-ubuntu22.04-cuda:
+  <<: *ubuntu-jammy
+  extra_elements:
+    - cc-common
+    - cc-ubuntu-cuda
