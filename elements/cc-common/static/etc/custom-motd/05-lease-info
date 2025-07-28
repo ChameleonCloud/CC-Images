@@ -29,7 +29,11 @@ END_DATE=$(read_vendordata "lease_end")
 
 if [ -z "$LEASE_ID" ] || [ -z "$START_DATE" ] || [ -z "$END_DATE" ]; then
     echo -e "\n    Lease information is not available."
-    exit 0
+    if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+        exit 0
+    else
+        return 0
+    fi
 fi
 
 END_SECONDS=$(date -d "${END_DATE%.*}" +%s)
