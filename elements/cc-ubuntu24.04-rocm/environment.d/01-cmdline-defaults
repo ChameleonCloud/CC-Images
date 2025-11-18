@@ -13,3 +13,6 @@ export DIB_GRUB_TIMEOUT=0
 # Defaults to True, but only matters for VMs with some flaky hypervisors.
 # Leaving it out unless we observe issues, can roll back
 export DIB_NO_TIMER_CHECK='False'
+
+# Enable iommu passthrough for AMD GPUs
+export DIB_BOOTLOADER_DEFAULT_CMDLINE="${DIB_BOOTLOADER_DEFAULT_CMDLINE} iommu=pt"
