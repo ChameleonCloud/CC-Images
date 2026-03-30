@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+if [[ -z "${DIB_VGPU_DRIVERS_URL:-}" ]]; then
+    echo "Error: DIB_VGPU_DRIVERS_URL is not set"
+    exit 1
+fi
+
+filename=$(basename "${DIB_VGPU_DRIVERS_URL}")
+deb_file="/tmp/in_target.d/${filename}"
+
+if [[ ! -f "${deb_file}" ]]; then
+    echo "Error: vGPU drivers DEB not found at ${deb_file}"
+    exit 1
+fi
+
+echo "Installing vGPU drivers from ${deb_file}..."
+apt install -y "${deb_file}"
+
+# Configure gridd using the package-provided config
+gridd_conf="/etc/nvidia/gridd.conf"
+if [[ ! -f "${gridd_conf}" ]]; then
+    echo "Error: ${gridd_conf} was not created by NVIDIA package"
+    exit 1
+fi
+sed -i 's/^FeatureType=0$/FeatureType=1/' "${gridd_conf}"
+sed -i 's/^#EnableUI=TRUE$/EnableUI=TRUE/' "${gridd_conf}"
+
+# Install client configuration token
+token_src="/tmp/in_target.d/client_configuration_token.tok"
+if [[ ! -f "${token_src}" ]]; then
+    echo "Error: client configuration token not found at ${token_src}"
+    exit 1
+fi
+mkdir -p /etc/nvidia/ClientConfigToken
+cp "${token_src}" /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+chmod 644 /etc/nvidia/ClientConfigToken/client_configuration_token.tok
+
+# Enable the boot-time NVIDIA setup service
+chmod 755 /usr/local/sbin/nvidia-vgpu-boot
+mkdir -p /etc/systemd/system/multi-user.target.wants
+ln -sf /etc/systemd/system/nvidia-vgpu-boot.service \
+    /etc/systemd/system/multi-user.target.wants/nvidia-vgpu-boot.service

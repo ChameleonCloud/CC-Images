@@ -17,6 +17,8 @@ def do_build(
     deps: "list[multiprocessing.Condition]",
     semaphore: multiprocessing.Semaphore,
     finished_building: multiprocessing.Condition,
+    vgpu_drivers_url: str = "",
+    vgpu_client_token_file: str = "",
 ) -> None:
     """
     Configures and runs disk-image-create to run for a single image. Waits on all dependencies
@@ -55,10 +57,24 @@ def do_build(
         if a.name:
             env[a.name] = a.download_url
 
+    # Set vGPU drivers URL if building a vGPU image
+    if "cuda-vgpu" in image.base_name.lower() and vgpu_drivers_url:
+        env["DIB_VGPU_DRIVERS_URL"] = vgpu_drivers_url
+    if "cuda-vgpu" in image.base_name.lower() and vgpu_client_token_file:
+        env["DIB_VGPU_CLIENT_TOKEN_FILE"] = vgpu_client_token_file
+
 
     os.environ.update(env)
     disk_format = "raw,qcow2"
     LOG.info(f"BUILD {image.name}: {pprint.pformat(env)}")
+    # Pass the image element and explicitly include the OS element derived from
+    # image provenance so DIB always has an operating-system root element.
+    elements = [image.base_name.lower()]
+    if image.distro:
+        os_element = image.distro.lower()
+        if os_element not in elements:
+            elements.append(os_element)
+
     args = [
         "disk-image-create",
         "-a",
@@ -70,7 +86,7 @@ def do_build(
         "--no-tmpfs",
         "--image-cache",
         image.cache_path,
-        image.base_name.lower(),
+        *elements,
     ]
 
     LOG.info(f"BUILD {image.name}: Waiting for an opportunity to execute build...")

@@ -19,6 +19,8 @@ class CCImagesArgs:
         version: str,
         arch: "list[Architecture]",
         images: "list[str]",
+        vgpu_drivers_url: str = "",
+        vgpu_client_token_file: str = "",
     ):
         self.do_build: bool = do_build
         self.do_push: bool = do_push
@@ -28,6 +30,8 @@ class CCImagesArgs:
         self.version: str = version
         self.arch: list[Architecture] = arch
         self.images: set[str] = set(images)
+        self.vgpu_drivers_url: str = vgpu_drivers_url
+        self.vgpu_client_token_file: str = vgpu_client_token_file
 
         if not (do_build or do_push):
             raise ValueError(
@@ -118,6 +122,22 @@ def parse_args() -> CCImagesArgs:
     )
 
     arg_parser.add_argument(
+        "--vgpu-drivers-url",
+        help="URL to the NVIDIA GRID vGPU drivers .deb file (required when building cc-ubuntu24.04-cuda-vgpu)",
+        dest="vgpu_drivers_url",
+        type=str,
+        default="",
+    )
+
+    arg_parser.add_argument(
+        "--vgpu-client-token-file",
+        help="Path to the NVIDIA GRID vGPU client configuration token file (required when building cc-ubuntu24.04-cuda-vgpu)",
+        dest="vgpu_client_token_file",
+        type=str,
+        default="",
+    )
+
+    arg_parser.add_argument(
         "images",
         help="The image tag(s) to build",
         type=str,
@@ -135,4 +155,6 @@ def parse_args() -> CCImagesArgs:
         namespace.version,
         namespace.architectures,
         namespace.images,
+        namespace.vgpu_drivers_url,
+        namespace.vgpu_client_token_file,
     )
