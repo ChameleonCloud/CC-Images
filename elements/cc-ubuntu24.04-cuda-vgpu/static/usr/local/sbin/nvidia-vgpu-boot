@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
 set -u
 set -o pipefail
 
