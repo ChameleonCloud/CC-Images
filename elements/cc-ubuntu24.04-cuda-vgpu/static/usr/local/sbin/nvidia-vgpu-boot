@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# dib-lint: disable=sete setu setpipefail dibdebugtrace
+
+set -u
+set -o pipefail
+
+echo "nvidia-vgpu-boot: running NVIDIA boot-time setup"
+
+state_dir="/var/lib/nvidia-vgpu-boot"
+postinst_done="${state_dir}/postinst.done"
+lockfile="/run/nvidia-vgpu-boot.lock"
+mkdir -p "${state_dir}"
+
+exec 9>"${lockfile}"
+if command -v flock >/dev/null 2>&1 && ! flock -n 9; then
+    echo "nvidia-vgpu-boot: another instance is already running, exiting"
+    exit 0
+fi
+
+postinst=$(ls /var/lib/dpkg/info/nvidia-linux-grid-*.postinst 2>/dev/null | head -1 || true)
+if [[ -z "${postinst}" ]]; then
+    echo "nvidia-vgpu-boot: warning: nvidia postinst script not found; skipping postinst configure"
+elif [[ ! -f "${postinst_done}" ]]; then
+    if timeout 120s env DEBIAN_FRONTEND=noninteractive "${postinst}" configure; then
+        touch "${postinst_done}"
+    else
+        echo "nvidia-vgpu-boot: warning: postinst configure failed or timed out"
+    fi
+fi
+
+systemctl daemon-reload
+
+if ! timeout 90s systemctl restart nvidia-gridd.service; then
+    echo "nvidia-vgpu-boot: warning: restart timed out or failed, trying start"
+    timeout 90s systemctl start nvidia-gridd.service || true
+fi
+
+if ! timeout 30s systemctl is-active --quiet nvidia-gridd.service; then
+    echo "nvidia-vgpu-boot: warning: nvidia-gridd.service is not active after boot setup"
+fi
+
+exit 0

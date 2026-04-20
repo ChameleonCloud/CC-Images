@@ -31,6 +31,19 @@ def run_tasks(cmdline: CCImagesArgs, images_to_run: "list[ChameleonImage]"):
     ensure_third_party_elements()
     LOG.info("Defining tasks to execute...")
 
+    # Validate that vGPU image builds have the required GPU drivers URL
+    vgpu_image_names = {img.base_name for img in images_to_run if "cuda-vgpu" in img.base_name.lower()}
+    if vgpu_image_names and cmdline.do_build and not cmdline.vgpu_drivers_url:
+        raise ValueError(
+            f"Building {', '.join(vgpu_image_names)} requires --vgpu-drivers-url CLI argument. "
+            f"Provide the URL to the NVIDIA GRID vGPU drivers .deb file."
+        )
+    if vgpu_image_names and cmdline.do_build and not cmdline.vgpu_client_token_file:
+        raise ValueError(
+            f"Building {', '.join(vgpu_image_names)} requires --vgpu-client-token-file CLI argument. "
+            f"Provide the path to the NVIDIA GRID vGPU client configuration token file."
+        )
+
     # Each task must acquire this semaphore, which ensures that we do not go above the configured
     # limit of concurrent tasks
     semaphore = process_manager.Semaphore(value=cmdline.n_tasks)
@@ -66,6 +79,8 @@ def run_tasks(cmdline: CCImagesArgs, images_to_run: "list[ChameleonImage]"):
                         [is_built[d] for d in deps],
                         semaphore,
                         is_built[image],
+                        cmdline.vgpu_drivers_url,
+                        cmdline.vgpu_client_token_file,
                     ),
                     name=f"BUILD-{image.name}",
                 )

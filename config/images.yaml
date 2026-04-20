@@ -80,6 +80,12 @@ CC-Ubuntu24.04-CUDA:
   provenance:
     variant: gpu
 
+CC-Ubuntu24.04-CUDA-VGPU:
+  depends:
+    - CC-Ubuntu24.04-CUDA
+  provenance:
+    variant: gpu
+
 CC-CentOS9-Stream:
   provenance:
     distro: centos
