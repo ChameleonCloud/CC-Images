@@ -1,6 +1,6 @@
 block-device-efi
 cc-firewall
-cc-login
+cc-auth
 cc-manifest
 cc-rclone
 cc-snapshot
