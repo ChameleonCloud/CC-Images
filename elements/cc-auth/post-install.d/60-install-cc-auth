@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+VENV_PATH=/opt/chameleon/.venv
+
+$VENV_PATH/bin/pip install git+https://github.com/ChameleonCloud/ccauth.git
+
+ln -sf $VENV_PATH/bin/ccauth /usr/local/bin/ccauth
+ln -sf $VENV_PATH/bin/cc-login /usr/local/bin/cc-login
