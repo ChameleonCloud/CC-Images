@@ -11,23 +11,22 @@ trap 'exit_failure' EXIT
 set -e
 
 if [ ! -f /home/cc/openrc ]; then
-    OPENRC=$(cc-read-vendordata "openrc")
-    if [ "${OPENRC}" != "null" ]; then
-        cc-read-vendordata "openrc" > /home/cc/openrc
-        sed -i 's/^ *//g' /home/cc/openrc
-    else
-        echo "$(date '+%Y-%m-%d %H:%M:%S'): Unable to read OPENRC" >> /home/cc/cc_my_mounting_point.failure
-        exit 1
-    fi
+    echo "No ~/openrc found. Run 'ccauth openrc --output ~/openrc' to authenticate, then re-run this script." >&2
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): No ~/openrc found, run 'ccauth openrc --output ~/openrc' first" >> /home/cc/cc_my_mounting_point.failure
+    exit 1
 fi
 
 source /home/cc/openrc
+
+REGION=$(cc-read-vendordata "region")
+if [ "${REGION}" = "KVM@TACC" ]; then
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): KVM@TACC does not have an object store available" >> /home/cc/cc_my_mounting_point.failure
+    exit 1
+fi
+
+OS_STORAGE_URL=$(openstack catalog show object-store -f json 2>/dev/null | jq -r '.endpoints[] | select(.interface=="public") | .url')
 if [ -z "${OS_STORAGE_URL}" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S'): OS_STORAGE_URL was not set" >> /home/cc/cc_my_mounting_point.failure
-    REGION=$(cc-read-vendordata "region")
-    if [ "${REGION}" = "KVM@TACC" ]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S'): KVM@TACC does not have an object store available" >> /home/cc/cc_my_mounting_point.failure
-    fi
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): Unable to look up object-store endpoint" >> /home/cc/cc_my_mounting_point.failure
     exit 1
 fi
 
