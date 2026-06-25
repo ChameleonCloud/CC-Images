@@ -24,19 +24,19 @@ if [ "${REGION}" = "KVM@TACC" ]; then
     exit 1
 fi
 
-OS_STORAGE_URL=$(openstack catalog show object-store -f json 2>/dev/null | jq -r '.endpoints[] | select(.interface=="public") | .url')
+OS_STORAGE_URL=$(openstack catalog show object-store -f json | jq -r '.endpoints[] | select(.interface=="public") | .url')
 if [ -z "${OS_STORAGE_URL}" ]; then
     echo "$(date '+%Y-%m-%d %H:%M:%S'): Unable to look up object-store endpoint" >> /home/cc/cc_my_mounting_point.failure
     exit 1
 fi
 
 EC2_STORAGE_ENDPOINT=${OS_STORAGE_URL%/swift*}
-EC2_CREDS="$(openstack ec2 credential list -f json 2>/dev/null)"
+EC2_CREDS="$(openstack ec2 credential list -f json)"
 if [ $? -eq 0 ] && [ ! -z "$output" ]; then
     ACCESS_KEY=$(echo "$output" | jq -r '.[0].Access')
     SECRET_KEY=$(echo "$output" | jq -r '.[0].Secret')
 else
-    EC2_CREDS="$(openstack ec2 credential create -f json 2>/dev/null)"
+    EC2_CREDS="$(openstack ec2 credential create -f json)"
     ACCESS_KEY=$(echo ${EC2_CREDS} | jq -r '.access')
     SECRET_KEY=$(echo ${EC2_CREDS} | jq -r '.secret')
 fi
