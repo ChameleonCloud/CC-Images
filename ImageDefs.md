@@ -58,7 +58,7 @@ The CC user account (TODO: Make this configurable), must also have the following
 1. Automatic login via the serial console:
     1. So that users can access their instances via the serial console, especially without networking, the CC user account must be set to have a getty with autologin.
     2. This is currently provided via a systemd unit that executes: `/sbin/agetty --keep-baud 115200,38400,9600 --autologin cc --noclear %I $TERM` on all accessed TTYs.
-2. An openstack `openrc` file can be created at `/home/cc/openrc` by running `ccauth openrc --output ~/openrc`, which authenticates the `cc` user as the launching user via OIDC device flow (see [ccauth](https://github.com/ChameleonCloud/ccauth)). This is no longer generated automatically at boot; the user must run it themselves.
+2. An openstack `openrc` file can be created at `/home/cc/openrc` by running `ccauth openrc --output ~/openrc`, which authenticates the `cc` user as your user via OIDC device flow (see [ccauth](https://github.com/ChameleonCloud/ccauth)). This is no longer generated automatically at boot; the user must run it themselves.
 3. `/home/cc/.ssh/authorized_keys` should be populated with:
     1. the ssh public key specified to nova at boot time (via user-data)
     2. all public keys attached to the user's openstack account (via vendordata)
