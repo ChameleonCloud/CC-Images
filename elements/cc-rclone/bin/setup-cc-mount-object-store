@@ -32,9 +32,9 @@ fi
 
 EC2_STORAGE_ENDPOINT=${OS_STORAGE_URL%/swift*}
 EC2_CREDS="$(openstack ec2 credential list -f json)"
-if [ $? -eq 0 ] && [ ! -z "$output" ]; then
-    ACCESS_KEY=$(echo "$output" | jq -r '.[0].Access')
-    SECRET_KEY=$(echo "$output" | jq -r '.[0].Secret')
+if [ $? -eq 0 ] && [ ! -z "$EC2_CREDS" ] && [ "$(echo "$EC2_CREDS" | jq 'length')" -gt 0 ]; then
+    ACCESS_KEY=$(echo "$EC2_CREDS" | jq -r '.[0].Access')
+    SECRET_KEY=$(echo "$EC2_CREDS" | jq -r '.[0].Secret')
 else
     EC2_CREDS="$(openstack ec2 credential create -f json)"
     ACCESS_KEY=$(echo ${EC2_CREDS} | jq -r '.access')
