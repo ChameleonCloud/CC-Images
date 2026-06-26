@@ -28,6 +28,6 @@ cat << EOF
 
     Discover information about this node:
 
-    source ~/openrc
+    ccauth openrc --output ~/openrc && source ~/openrc
     openstack reservation host show ${NODE_ID}
 EOF

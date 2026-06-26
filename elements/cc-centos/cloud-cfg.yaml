@@ -100,6 +100,4 @@ write_files:
     append: true
 
 runcmd:
-  - su cc -c /etc/auto_generate_openrc
   - su cc -c /etc/copy_user_ssh_keys
-  - su cc -c /etc/auto_mount_object_store
