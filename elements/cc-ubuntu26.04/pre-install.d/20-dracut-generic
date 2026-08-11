@@ -1,0 +1,28 @@
+#!/bin/bash
+# Configure dracut to generate a generic (non-hostonly) initramfs.
+#
+# Ubuntu 26 switched from initramfs-tools to dracut as the default initramfs
+# generator. Dracut's default hostonly=yes mode only includes drivers for the
+# hardware present on the build machine. On a typical build host with SATA
+# storage, the generated initramfs contains ahci but not nvme -- so nodes with
+# NVMe drives never see their root disk in the initramfs and hang forever at:
+#   dracut-initqueue: still waiting for /dev/disk/by-label/cloudimg-rootfs
+#
+# This file must be created in pre-install.d (before package installation)
+# because the kernel package post-install hook runs dracut to generate the
+# initramfs immediately at install time.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+mkdir -p /etc/dracut.conf.d
+
+cat > /etc/dracut.conf.d/50-chameleon.conf << 'EOF'
+# Generate a generic initramfs with drivers for all hardware types.
+# hostonly mode produces an initramfs tailored to the build machine
+# which will not boot on other hardware.
+hostonly="no"
+EOF
