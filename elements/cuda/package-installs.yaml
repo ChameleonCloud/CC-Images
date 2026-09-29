@@ -5,6 +5,10 @@ cuda-toolkit-12-6:
   when: DIB_CUDA_VERSION = 12
 nvidia-driver-560:
   when: DIB_CUDA_VERSION = 12
+  not-arch: arm64
+nvidia-driver-580-open:
+  when: DIB_CUDA_VERSION = 12
+  arch: arm64
 
 cuda-libraries-11-4:
   when: DIB_CUDA_VERSION = 11

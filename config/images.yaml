@@ -74,6 +74,9 @@ CC-Ubuntu24.04-ROCm:
     variant: hwe
 
 CC-Ubuntu24.04-CUDA:
+  arch:
+    - amd64
+    - arm64
   depends:
     - CC-Ubuntu24.04
   baremetal-only: true
