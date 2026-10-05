@@ -130,6 +130,8 @@ class ChameleonImage:
             "build-tag": self.build_tag,
             "build-ipa": "false",
             "chameleon-supported": "true",
+            # Lets Nova's ImagePropertiesFilter keep e.g. x86 images off ARM nodes
+            "hw_architecture": self.arch.hw_architecture,
         }
 
     @property
