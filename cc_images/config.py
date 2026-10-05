@@ -41,3 +41,16 @@ def get_supported_image_names() -> "list[str]":
 class Architecture(enum.Enum):
     AMD64 = "amd64"
     ARM64 = "arm64"
+
+    @property
+    def hw_architecture(self) -> str:
+        """
+        Translate beween this enum and the `hw_architecture` property used by 
+        Glance and Nova.
+        """
+        if self == Architecture.AMD64:
+            return "x86_64"
+        elif self == Architecture.ARM64:
+            return "aarch64"
+        else:
+            raise ValueError(f"no hw_architecture known for {self}")
