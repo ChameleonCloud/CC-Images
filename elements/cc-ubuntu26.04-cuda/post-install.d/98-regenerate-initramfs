@@ -1,0 +1,21 @@
+#!/bin/bash
+# Remove the initramfs update hold set by install.d/90-hold-initramfs-updates
+# and rebuild the initramfs for every kernel installed in the image. This runs
+# after dkms has built the NVIDIA modules (post-install.d/97-dkms).
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+conf=/etc/initramfs-tools/update-initramfs.conf
+backup="${conf}.cc-images-hold"
+
+if [ -e "${backup}" ]; then
+    mv -f "${backup}" "${conf}"
+else
+    rm -f "${conf}"
+fi
+
+update-initramfs -u -k all
