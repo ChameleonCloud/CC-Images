@@ -9,6 +9,7 @@ images must support the following:
 | ---------------------- | ------------------------------ |
 | cc-centos9-stream      | OK                             |
 | cc-centos9-stream-cuda | Breaks when adding `cuda-12-6` |
+| cc-centos10-stream     | New, not yet built or booted   |
 | cc-ubuntu24.04         | OK                             |
 | cc-ubuntu24.04-cuda    | OK                             |
 

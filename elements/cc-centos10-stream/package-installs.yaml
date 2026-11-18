@@ -1,0 +1,7 @@
+---
+# These iptables packages are required for the firewall to interface properly with the kernel module
+iptables-nft:
+iptables-utils:
+# Keep any initramfs regenerated during the build generic (hostonly=no), so
+# it carries storage drivers (e.g. nvme) for hardware other than the build host
+dracut-config-generic:
