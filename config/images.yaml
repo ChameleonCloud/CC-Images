@@ -98,7 +98,7 @@ CC-Ubuntu26.04:
     release: resolute
     variant: base
 
-CC-Ubuntu26.04-CUDA:
+CC-Ubuntu26.04-CUDA13:
   arch:
     - amd64
     - arm64

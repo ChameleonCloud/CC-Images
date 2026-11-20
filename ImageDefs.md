@@ -12,6 +12,7 @@ images must support the following:
 | cc-centos10-stream     | OK                             |
 | cc-ubuntu24.04         | OK                             |
 | cc-ubuntu24.04-cuda    | OK                             |
+| cc-ubuntu26.04-cuda13  | OK, Turing and newer GPUs only |
 
 ## Partition layout and boot
 The image must be bootable on both BIOS and UEFI-based systems. For this reason, we use
