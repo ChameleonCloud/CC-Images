@@ -8,8 +8,11 @@ set -o pipefail
 
 upstream_version="${DIB_RELEASE//-stream/}"
 
-# Package repository for puppetserver
-${YUM} install -y "https://yum.puppet.com/puppet-release-el-${upstream_version}.noarch.rpm"
+# Package repository for puppetserver.
+# yum.puppet.com publishes no EL10 release package, so skip it from 10 on.
+if [[ "${upstream_version}" -lt 10 ]]; then
+    ${YUM} install -y "https://yum.puppet.com/puppet-release-el-${upstream_version}.noarch.rpm"
+fi
 
 # Extra Packages for Enterprise Linux repository
 ${YUM} install -y "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${upstream_version}.noarch.rpm"

@@ -1,10 +1,11 @@
 ---
 dhcp-client:
-redhat-lsb-core:
-  # Deprecated in CentOS 9
-  when: DIB_RELEASE != 9-stream
+  # Removed in EL10; cloud-init pulls in dhcpcd instead
+  when: DIB_RELEASE != 10-stream
 redhat-rpm-config:
 rpm-build:
 rpm-sign:
 nscd:
+  # Removed in EL10
+  when: DIB_RELEASE != 10-stream
 chrony:

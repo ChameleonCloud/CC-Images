@@ -9,6 +9,7 @@ images must support the following:
 | ---------------------- | ------------------------------ |
 | cc-centos9-stream      | OK                             |
 | cc-centos9-stream-cuda | Breaks when adding `cuda-12-6` |
+| cc-centos10-stream     | OK                             |
 | cc-ubuntu24.04         | OK                             |
 | cc-ubuntu24.04-cuda    | OK                             |
 
@@ -20,8 +21,8 @@ element, configured as:
 - GPT (not MBR) partition table
 - 550MiB "ESP" partition for `/boot/efi`
 - 8MiB "BSP" partition, as a [bios boot partition](https://en.wikipedia.org/wiki/BIOS_boot_partition).
-- The remaining disk space is a single partiton mounted to `/`, currently standardized on ext4 for ubuntu images, and XFS on centos images, to match upstream defaults.
-    - Note: this is an area we could customize, for example introducing LVM or a snapshot aware filesystem, or other features.
+- The remaining disk space is a single partiton mounted to `/`, currently ext4 on both ubuntu and centos images.
+  - Note: this is an area we could customize, for example introducing LVM or a snapshot aware filesystem, or other features.
 
 ## Image RootFS
 

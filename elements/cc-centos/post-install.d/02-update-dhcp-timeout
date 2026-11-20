@@ -6,6 +6,12 @@ fi
 set -eu
 set -o pipefail
 
+# EL10 has no dhclient (dhcp-client was removed), so there is nothing to tune
+if ! rpm -q dhcp-client >/dev/null 2>&1; then
+    echo "dhclient not installed, skipping DHCP timeout change"
+    exit 0
+fi
+
 # Change the DHCP timeout to a 30 seconds value.
 if [[ -f "/etc/dhcp/dhclient.conf" ]]; then
     sed -i "s/timeout.*/timeout 30;/g" /etc/dhcp/dhclient.conf
