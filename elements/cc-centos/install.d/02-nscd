@@ -6,5 +6,8 @@ fi
 set -eu
 set -o pipefail
 
-# NSCD not enabled by default on installation
-systemctl enable nscd
+# NSCD not enabled by default on installation.
+# It no longer exists in EL10, so only enable it where it was installed.
+if rpm -q nscd >/dev/null 2>&1; then
+    systemctl enable nscd
+fi

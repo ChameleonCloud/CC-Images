@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# The CentOS cloud image installs Cockpit, and CentOS 10's default systemd preset
+# enables cockpit.socket, so the web console listens on port 9090. CentOS 9's preset
+# leaves it disabled. Keep it disabled here too, so only SSH listens by default.
+#
+# Disabling the unit alone wouldn't last: the build leaves /etc/machine-id as
+# "uninitialized", so each instance's first boot re-applies presets. This preset
+# file sorts before CentOS's 90-default.preset, so its "disable" wins.
+#
+# Users can still turn Cockpit on with: sudo systemctl enable --now cockpit.socket
+mkdir -p /etc/systemd/system-preset
+echo "disable cockpit.socket" > /etc/systemd/system-preset/80-chameleon.preset
+
+if [[ -e /usr/lib/systemd/system/cockpit.socket ]]; then
+    systemctl disable cockpit.socket
+fi

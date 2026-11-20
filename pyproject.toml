@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "cc-images"
 requires-python = ">=3.8"
 dependencies = [
-    "diskimage-builder>3.29.0",
+    "diskimage-builder>=3.39.0",
     "GitPython>3.1.31",
     "openstacksdk>1.0.1",
     "setuptools",
@@ -18,7 +18,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "diskimage-builder>3.29.0"
+    "diskimage-builder>=3.39.0"
 ]
 
 [project.scripts]

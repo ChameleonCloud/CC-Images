@@ -229,6 +229,8 @@ elements defined here will be automatically pulled and imported every time `cc-i
 ## Known Issues
 
 * Currently, CentOS images need to be built on a CentOS host
+* CentOS Stream 10 (x86_64) is built for x86-64-v3, so both the build host and every node or VM
+  running the image need a Haswell-or-newer class CPU (on KVM, the guest CPU model must expose v3)
 * CentOS CUDA images are non-functioning
   * The Nvidia drivers are not loaded by the system
 * The FPGA elements are untested and incomplete

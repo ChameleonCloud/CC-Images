@@ -1,6 +1,5 @@
 ---
+# virt-sysprep lives in guestfs-tools on EL9 and EL10
 guestfs-tools:
-  when:
-    - DISTRO_NAME = centos
-    - DIB_RELEASE = 9-stream
+  when: DISTRO_NAME = centos
 libguestfs-tools:
