@@ -1,4 +1,18 @@
 ---
+# CUDA 13 (Ubuntu 26.04): Turing and newer only. The driver comes from NVIDIA's
+# repo, held to the branch that ships with this toolkit (13.5 -> 620). The pin
+# package goes in at install.d so apt already honours it when nvidia-open goes
+# in at post-install.d. Bump the toolkit and pin versions together.
+nvidia-driver-pinning-620:
+  when: DIB_CUDA_VERSION = 13
+cuda-libraries-13-5:
+  when: DIB_CUDA_VERSION = 13
+cuda-toolkit-13-5:
+  when: DIB_CUDA_VERSION = 13
+nvidia-open:
+  when: DIB_CUDA_VERSION = 13
+  phase: post-install.d
+
 cuda-libraries-12-6:
   when: DIB_CUDA_VERSION = 12
 cuda-toolkit-12-6:

@@ -1,0 +1,29 @@
+#!/bin/bash
+# Pause initramfs updates while the NVIDIA driver is installed.
+#
+# The postinst scripts of NVIDIA's nvidia-kernel-common and nvidia-dkms-open
+# run `update-initramfs -u -k $(uname -r)` whenever a newer kernel than the
+# "current" one is installed. Inside the DIB chroot, `uname -r` is the build
+# host's kernel, which is not installed in the image. On 24.04 initramfs-tools
+# only warns about the missing modules, but 26.04's dracut fails hard
+# ("Cannot find module directory"), which breaks the package install.
+#
+# update-initramfs on 26.04 still reads update_initramfs from this file and
+# skips every update while it is "no". nvidia-open is installed at
+# post-install.d/00-package-installs; 98-regenerate-initramfs removes the
+# hold and rebuilds the initramfs for the image's own kernels.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+conf=/etc/initramfs-tools/update-initramfs.conf
+backup="${conf}.cc-images-hold"
+
+mkdir -p "$(dirname "${conf}")"
+if [ -e "${conf}" ]; then
+    cp -a "${conf}" "${backup}"
+fi
+echo "update_initramfs=no" >> "${conf}"
