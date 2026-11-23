@@ -98,6 +98,16 @@ CC-Ubuntu26.04:
     release: resolute
     variant: base
 
+CC-Ubuntu26.04-CUDA13:
+  arch:
+    - amd64
+    - arm64
+  depends:
+    - CC-Ubuntu26.04
+  baremetal-only: true
+  provenance:
+    variant: gpu
+
 CC-CentOS9-Stream:
   provenance:
     distro: centos

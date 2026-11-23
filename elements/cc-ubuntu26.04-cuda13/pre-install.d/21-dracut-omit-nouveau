@@ -1,0 +1,27 @@
+#!/bin/bash
+# Keep nouveau out of the dracut initramfs.
+#
+# cc-ubuntu26.04 runs dracut with hostonly="no" (see 20-dracut-generic). In
+# that mode dracut's drm module, which plymouth pulls in, adds every KMS
+# driver to the initramfs, nouveau included. dracut only copies
+# /etc/modprobe.d into the initramfs in hostonly mode, so the nouveau
+# blacklist from the disable-nouveau element never reaches early boot. On a
+# GPU node nouveau would load from the initramfs and hold the GPU before the
+# NVIDIA driver can claim it.
+#
+# disable-nouveau ships an equivalent dracut.conf.d file, but only the
+# dracut-regenerate element installs it. This must run in pre-install.d so it
+# is in place before the kernel and driver packages generate the initramfs.
+
+if [ "${DIB_DEBUG_TRACE:-0}" -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+mkdir -p /etc/dracut.conf.d
+
+cat > /etc/dracut.conf.d/60-omit-nouveau.conf << 'CONF'
+# The NVIDIA driver must own the GPU; never load nouveau from the initramfs.
+omit_drivers+=" nouveau "
+CONF
